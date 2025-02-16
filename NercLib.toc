@@ -9,4 +9,5 @@
 ## RequiredDeps: LibStub
 
 libs\_imports.xml
+modules\_imports.xml
 NercLib.lua
