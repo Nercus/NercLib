@@ -1,0 +1,12 @@
+## Interface: 110005, 110100
+
+## Title: NercLib
+## Notes: A framework for my addons
+## Author: Nerc
+## Version: @project-version@
+
+## X-Website: https://github.com/Nercus/NercLib
+## RequiredDeps: LibStub
+
+libs\_imports.xml
+NercLib.lua
