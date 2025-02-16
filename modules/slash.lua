@@ -36,6 +36,7 @@ function NercLib:AddSlashCommandModule(addon)
 
     function SlashCommand:SetDefaultAction(func)
         assert(type(func) == "function", "Default action not provided")
+        assert(not commandList["default"], "Default action already set")
         commandList["default"] = func
     end
 
