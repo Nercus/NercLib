@@ -40,9 +40,6 @@ function NercLib:AddSlashCommandModule(addon)
     ---parse the full msg and split into the different arguments
     ---@param msg string
     local function SlashCommandHandler(msg)
-        if addedTriggers == 1 then
-            error("You must set a slash trigger before adding commands")
-        end
         local args = {} ---@type table<number, string>
         for word in string.gmatch(msg, "[^%s]+") do
             table.insert(args, word)
