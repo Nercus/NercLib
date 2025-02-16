@@ -155,14 +155,14 @@ function NercLib:AddDebugModule(addon)
 
     local function AddDevReload()
         local f = CreateFrame("frame", nil, UIParent, "DefaultPanelTemplate")
-        f:SetPoint("BOTTOM", 0, 10)
+        f:SetPoint("BOTTOM", 0, 5)
         f:SetFrameStrata("HIGH")
         f:SetFrameLevel(100)
 
         local totalWidth = 60
         local text = f:CreateFontString(nil, "OVERLAY")
-        text:SetFontObject(GameFontNormalLarge)
-        text:SetPoint("TOP", 0, -25)
+        text:SetFontObject(GameFontNormal)
+        text:SetPoint("TOP", 0, -30)
         text:SetText("Press 1 to reload UI")
         f:SetScript("OnKeyDown", function(_, key)
             if key == "1" then
@@ -171,7 +171,6 @@ function NercLib:AddDebugModule(addon)
         end)
 
         local button1 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
-        button1:SetPoint("LEFT", 30, 0)
         button1:SetSize(130, 40)
         button1:SetFrameStrata("HIGH")
         button1:SetText("Run Placeholder")
@@ -182,7 +181,6 @@ function NercLib:AddDebugModule(addon)
         totalWidth = totalWidth + button1:GetWidth() + 10
 
         local button2 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
-        button2:SetPoint("LEFT", button1, "RIGHT", 10, 0)
         button2:SetSize(130, 40)
         button2:SetFrameStrata("HIGH")
         button2:SetText("Reset Saved Vars")
@@ -191,7 +189,6 @@ function NercLib:AddDebugModule(addon)
         totalWidth = totalWidth + button2:GetWidth() + 10
 
         local button3 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
-        button3:SetPoint("LEFT", button2, "RIGHT", 10, 0)
         button3:SetSize(130, 40)
         button3:SetFrameStrata("HIGH")
         button3:SetText("Debug Addon")
@@ -202,7 +199,6 @@ function NercLib:AddDebugModule(addon)
         totalWidth = totalWidth + button3:GetWidth() + 10
 
         local button4 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
-        button4:SetPoint("LEFT", button3, "RIGHT", 10, 0)
         button4:SetSize(130, 40)
         button4:SetFrameStrata("HIGH")
         button4:SetText("Exit Dev Mode")
@@ -211,13 +207,20 @@ function NercLib:AddDebugModule(addon)
         totalWidth = totalWidth + button4:GetWidth() + 10
 
 
+        --- SetPoint for the 4 buttons so they are centered horizontally in the frame
+        button2:SetPoint("RIGHT", f, "CENTER", -10, 0)
+        button1:SetPoint("RIGHT", button2, "LEFT", -5, 0)
+        button3:SetPoint("LEFT", f, "CENTER", 5, 0)
+        button4:SetPoint("LEFT", button3, "RIGHT", 10, 0)
+
+
 
         local testStatusbar = CreateFrame("StatusBar", nil, f)
         testStatusbar:SetSize(420, 27)
         testStatusbar:SetStatusBarTexture("delves-dashboard-bar-fill")
         testStatusbar:SetStatusBarDesaturated(true)
         testStatusbar:SetStatusBarColor(1, 1, 1)
-        testStatusbar:SetPoint("BOTTOM", 0, 13)
+        testStatusbar:SetPoint("BOTTOM", 0, 10)
 
 
         testStatusbar.border = testStatusbar:CreateTexture(nil, "BACKGROUND")
