@@ -8,7 +8,7 @@ function NercLib:AddPersistenceModule(addon)
     local SavedVars = addon:GetModule("SavedVars")
     local DEFAULTS = {}
 
-
+    ---@type table?
     local DB = _G[addon.tableName]
     if not DB then
         DB = {}

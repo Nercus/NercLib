@@ -120,6 +120,7 @@ function NercLib:AddDebugModule(addon)
         button1 = "Yes",
         button2 = "No",
         onAccept = function()
+            ---@type table?
             local DB = _G[addon.tableName]
             if not DB then
                 DB = {}
