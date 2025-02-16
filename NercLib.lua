@@ -52,9 +52,29 @@ function NercLib:CreateAddon(addonName, tableName)
     self:AddMenuModule(addon)
     self:AddTestsModule(addon)
     self:AddDebugModule(addon)
+    self:AddOptionModule(addon)
 
     local Debug = addon:GetModule("Debug")
     addon.Debug = Debug
+
+
+    --- Add localization
+    local L = setmetatable({}, {
+        __index = function(t, k)
+            local v = tostring(k)
+            --@do-not-package@
+            if Debug.Debug then
+                Debug:Debug("Missing localization for: " .. v)
+            end
+            --@end-do-not-package@
+            rawset(t, k, v)
+            return v
+        end
+    })
+    addon.L = L
+    addon.locale = GetLocale()
+
+
     addons[addonName] = addon
     return addon
 end

@@ -77,6 +77,8 @@
     "wowAPI.luals.configurationScope": "User",
     "wowAPI.luals.defineKnownGlobals": false,
     "cSpell.words": [
+        "colorpicker",
+        "Colorpicker",
         "debugstack",
         "getglobal",
         "Nerc",
