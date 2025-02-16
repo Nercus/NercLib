@@ -154,7 +154,7 @@ function NercLib:AddDebugModule(addon)
     local crossAtlas = "UI-QuestTracker-Objective-Fail"
 
     local function AddDevReload()
-        local f = CreateFrame("frame", nil, UIParent, "MapPinEnhancedBaseFrameTemplate")
+        local f = CreateFrame("frame", nil, UIParent, "DefaultPanelTemplate")
         f:SetPoint("BOTTOM", 0, 10)
         f:SetFrameStrata("HIGH")
         f:SetFrameLevel(100)
@@ -162,7 +162,7 @@ function NercLib:AddDebugModule(addon)
         local totalWidth = 60
         local text = f:CreateFontString(nil, "OVERLAY")
         text:SetFontObject(GameFontNormalLarge)
-        text:SetPoint("TOP", 0, -20)
+        text:SetPoint("TOP", 0, -25)
         text:SetText("Press 1 to reload UI")
         f:SetScript("OnKeyDown", function(_, key)
             if key == "1" then
@@ -170,7 +170,7 @@ function NercLib:AddDebugModule(addon)
             end
         end)
 
-        local button1 = CreateFrame("Button", nil, f, "MapPinEnhancedButtonYellowTemplate")
+        local button1 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
         button1:SetPoint("LEFT", 30, 0)
         button1:SetSize(130, 40)
         button1:SetFrameStrata("HIGH")
@@ -181,7 +181,7 @@ function NercLib:AddDebugModule(addon)
 
         totalWidth = totalWidth + button1:GetWidth() + 10
 
-        local button2 = CreateFrame("Button", nil, f, "MapPinEnhancedButtonYellowTemplate")
+        local button2 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
         button2:SetPoint("LEFT", button1, "RIGHT", 10, 0)
         button2:SetSize(130, 40)
         button2:SetFrameStrata("HIGH")
@@ -190,7 +190,7 @@ function NercLib:AddDebugModule(addon)
 
         totalWidth = totalWidth + button2:GetWidth() + 10
 
-        local button3 = CreateFrame("Button", nil, f, "MapPinEnhancedButtonYellowTemplate")
+        local button3 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
         button3:SetPoint("LEFT", button2, "RIGHT", 10, 0)
         button3:SetSize(130, 40)
         button3:SetFrameStrata("HIGH")
@@ -201,7 +201,7 @@ function NercLib:AddDebugModule(addon)
 
         totalWidth = totalWidth + button3:GetWidth() + 10
 
-        local button4 = CreateFrame("Button", nil, f, "MapPinEnhancedButtonRedTemplate")
+        local button4 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
         button4:SetPoint("LEFT", button3, "RIGHT", 10, 0)
         button4:SetSize(130, 40)
         button4:SetFrameStrata("HIGH")
@@ -314,6 +314,7 @@ function NercLib:AddDebugModule(addon)
             return
         end
         local devModeEnabled = SavedVars:GetVar("devMode")
+        print("devModeEnabled", devModeEnabled)
         local LDBIcon = LibStub("LibDBIcon-1.0", true)
         if (devModeEnabled) then
             Text:Print("Dev mode enabled")
