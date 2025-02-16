@@ -141,6 +141,7 @@ function NercLib:AddTestsModule(addon)
         local testIndex = 1
         ticker = C_Timer.NewTicker(0.05, function()
             local test = tests[testIndex]
+            if not test then return end
             local success, msg = test:Run()
             onUpdate(success)
             if not success then
