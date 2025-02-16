@@ -65,7 +65,8 @@ function NercLib:AddDebugModule(addon)
         "BugSack",
         "TextureAtlasViewer",
         "DevTool",
-        "ScriptLibrary"
+        "ScriptLibrary",
+        addon.name
     }
 
 
