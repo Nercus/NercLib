@@ -8,7 +8,7 @@ if not NercLib then return end
 _G.NercLib = NercLib
 
 ---@alias DEFAULT_MODULES "SavedVars"|"Events"|"Text"|"SlashCommand"|"Utils"| "Menu"|"Tests"
-
+---@type table<string, NercLibAddon>
 local addons = {}
 
 ---@param addonName string The name of the addon to create
@@ -83,5 +83,6 @@ end
 ---@param addonName T | string
 ---@return T
 function NercLib:GetAddon(addonName)
+    assert(addons[addonName], "Addon not found: " .. addonName)
     return addons[addonName]
 end
