@@ -23,23 +23,17 @@ function NercLib:CreateAddon(addonName, tableName)
         modules = {}
     }
 
-    ---@param name string
-    ---@return table
-    function addon:CreateModule(name)
-        local m = {}
-        if (not self.modules) then
-            self.modules = {}
-        end
-        self.modules[name] = m
-        return m
-    end
-
     ---@generic T
     ---@param name `T`|DEFAULT_MODULES
     ---@return T
     function addon:GetModule(name)
         if (not self.modules or not self.modules[name]) then
-            return self:CreateModule(name)
+            local m = {}
+            if (not self.modules) then
+                self.modules = {}
+            end
+            self.modules[name] = m
+            return m
         end
         return self.modules[name]
     end
