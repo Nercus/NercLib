@@ -16,7 +16,6 @@ function NercLib:AddSlashCommandModule(addon)
         local GLOBAL_NAME = string.format("SLASH_%s%d", addon.name:upper(), addedTriggers)
         ---@diagnostic disable-next-line: no-unknown
         _G[GLOBAL_NAME] = trigger
-        SLASH_addon1, SLASH_addon2 = trigger, trigger
         addedTriggers = addedTriggers + 1
     end
 
