@@ -9,12 +9,6 @@
     "editor.indentSize": "tabSize",
     "editor.tabCompletion": "onlySnippets",
     "editor.tabSize": 4,
-    "explorer.fileNesting.enabled": true,
-    "explorer.fileNesting.expand": true,
-    "explorer.fileNesting.patterns": {
-        "*.lua": "${capture}.lua, ${capture}.xml",
-        "*.toc": ".pkgmeta, .luarc.json, README.md, .gitignore"
-    },
     "explorer.sortOrder": "default",
     "Lua.completion.autoRequire": false,
     "Lua.diagnostics.disable": [
