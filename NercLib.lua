@@ -44,6 +44,7 @@ function NercLib:CreateAddon(addonName, tableName)
         return self.modules[name]
     end
 
+    ---@cast self NercLibPrivate
     self:AddPersistenceModule(addon)
     self:AddEventsModule(addon)
     self:AddTextModule(addon)

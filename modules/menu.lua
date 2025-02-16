@@ -1,4 +1,4 @@
----@class NercLib
+---@class NercLibPrivate : NercLib
 local NercLib = _G.NercLib
 
 ---@alias MenuEntryType "button" | "title" | "checkbox" | "radio" | "divider" | "spacer" | "template" | "submenu"
