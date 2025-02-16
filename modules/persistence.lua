@@ -78,7 +78,6 @@ function NercLib:AddPersistenceModule(addon)
 
         ---@type table
         local dbTable = _G[addon.tableName]
-        addon:GetModule("Debug"):Debug(dbTable)
         for index, key in ipairs(arg) do
             if index == #arg then
                 return dbTable[key]
