@@ -12,7 +12,7 @@ function NercLib:AddPersistenceModule(addon)
     local DB = _G[addon.tableName]
     if not DB then
         DB = {}
-        _G[addon.tableName] = DB
+        _G[addon.tableName] = DB --[[@as table]]
     end
 
     ---Retrieves the default value for a given set of keys.

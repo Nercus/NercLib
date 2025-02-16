@@ -124,7 +124,7 @@ function NercLib:AddDebugModule(addon)
             local DB = _G[addon.tableName]
             if not DB then
                 DB = {}
-                _G[addon.tableName] = DB
+                _G[addon.tableName] = DB --[[@as table]]
             end
             ---@type table<DevModeKeysToKeep, any>
             local DBToKeep = {}
