@@ -91,7 +91,7 @@ function NercLib:AddMenuModule(addon)
     ---@param menuTemplate AnyMenuEntry[]
     ---@return function
     function Menu:GetGeneratorFunction(menuTemplate)
-        assert(type(menuTemplate) == "table")
+        assert(type(menuTemplate) == "table", "Menu template not provided or not a table")
         return function(_, rootDescription)
             ---@cast rootDescription ElementMenuDescriptionProxy
             for _, entry in ipairs(menuTemplate) do
@@ -103,8 +103,8 @@ function NercLib:AddMenuModule(addon)
     ---@param parentFrame Region
     ---@param menuTemplate AnyMenuEntry[]
     function Menu:GenerateMenu(parentFrame, menuTemplate)
-        assert(type(parentFrame) == "table")
-        assert(type(menuTemplate) == "table")
+        assert(type(parentFrame) == "table", "Parent frame not provided orr not a region")
+        assert(type(menuTemplate) == "table", "Menu template not provided or not a table")
 
         MenuUtil.CreateContextMenu(parentFrame, function(_, rootDescription)
             ---@cast rootDescription ElementMenuDescriptionProxy

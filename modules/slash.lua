@@ -13,6 +13,7 @@ function NercLib:AddSlashCommandModule(addon)
 
     local addedTriggers = 1
     function SlashCommand:SetSlashTrigger(trigger)
+        assert(type(trigger) == "string", "Slash command trigger not provided")
         local GLOBAL_NAME = string.format("SLASH_%s%d", addon.name:upper(), addedTriggers)
         ---@diagnostic disable-next-line: no-unknown
         _G[GLOBAL_NAME] = trigger
@@ -34,6 +35,7 @@ function NercLib:AddSlashCommandModule(addon)
     end
 
     function SlashCommand:SetDefaultAction(func)
+        assert(type(func) == "function", "Default action not provided")
         commandList["default"] = func
     end
 
@@ -62,12 +64,17 @@ function NercLib:AddSlashCommandModule(addon)
     ---@param func function
     ---@param help string
     function SlashCommand:AddSlashCommand(command, func, help)
+        assert(type(command) == "string", "Command not provided")
+        assert(type(func) == "function", "Function not provided")
+        assert(type(help) == "string", "Help not provided")
         commandList[command] = func
         commandHelpStrings[command] = help
     end
 
     local helpCommandEnabled = false
     function SlashCommand:EnableHelpCommand(command, description)
+        assert(type(command) == "string", "Command not provided")
+        assert(type(description) == "string", "Description not provided")
         if helpCommandEnabled then
             return
         end

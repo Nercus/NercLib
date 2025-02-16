@@ -70,6 +70,8 @@ function NercLib:AddDebugModule(addon)
 
 
     function Debug:AddAddonToWhitelist(addonName)
+        assert(type(addonName) == "string", "Addon name must be a string")
+        assert(C_AddOns.GetAddOnInfo(addonName), "Addon must exist")
         table.insert(devAddonList, addonName)
     end
 

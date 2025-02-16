@@ -12,6 +12,7 @@ function NercLib:AddTextModule(addon)
     ---@param number number
     ---@return string
     function Text:AbbreviateNumber(number)
+        assert(type(number) == "number", "Number not provided or incorrect type")
         if number >= 1e12 then
             return string.format("%.1fT", number / 1e12)
         elseif number >= 1e9 then
@@ -30,7 +31,8 @@ function NercLib:AddTextModule(addon)
     ---@param color ColorMixin
     ---@return string
     function Text:WrapTextInColor(text, color)
-        assert(type(color) == "table", "Color must be a color object")
+        assert(type(text) == "string", "Text not provided or incorrect type")
+        assert(type(color) == "table", "Color not provided or incorrect type")
         local colorEscape = string.format("|cff%02x%02x%02x", color.r * 255, color.g * 255, color.b * 255)
         return colorEscape .. text .. "|r"
     end
@@ -43,6 +45,7 @@ function NercLib:AddTextModule(addon)
     ---@param prefix? string optional prefix to add to the UUID
     ---@return UUID
     function Text:GenerateUUID(prefix)
+        assert(type(prefix) == "string" or prefix == nil, "Prefix must be a string or nil")
         local template = 'xxxxxxxx-yxxx'
         local ans = string.gsub(template, '[xy]', function(c)
             local v = (c == 'x') and random(0, 0xf) or random(8, 0xb)

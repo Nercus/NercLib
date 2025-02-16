@@ -15,6 +15,9 @@ local addons = {}
 ---@param tableName string The saved variables to use for the addon
 ---@return NercLibAddon
 function NercLib:CreateAddon(addonName, tableName)
+    assert(addonName, "Addon name not provided")
+    assert(tableName, "Saved variables table name not provided")
+
     ---@class NercLibAddon
     local addon = {
         name = addonName,
@@ -27,6 +30,10 @@ function NercLib:CreateAddon(addonName, tableName)
     ---@param name `T`|DEFAULT_MODULES
     ---@return T
     function addon:GetModule(name)
+        assert(self.modules, "Modules not initialized")
+        assert(name, "Module name not provided")
+        assert(self.modules[name], "Module not found: " .. name)
+
         if (not self.modules or not self.modules[name]) then
             local m = {}
             if (not self.modules) then
@@ -58,6 +65,7 @@ end
 ---@param addonName T | string
 ---@return T
 function NercLib:GetAddon(addonName)
+    assert(addonName, "Addon name not provided")
     assert(addons[addonName], "Addon not found: " .. addonName)
     return addons[addonName]
 end

@@ -76,6 +76,7 @@
         "debugstack",
         "getglobal",
         "Nerc",
+        "RESETSAVEDVARS",
         "strsplit",
         "yxxx"
     ],

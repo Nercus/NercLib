@@ -9,6 +9,8 @@ function NercLib:AddUtilsModule(addon)
     local Utils = addon:GetModule("Utils")
 
     function Utils:DebounceChange(func, delay)
+        assert(type(func) == "function", "Function not provided")
+        assert(type(delay) == "number", "Delay not provided")
         ---@type FunctionContainer?
         local timer
         return function(...)
@@ -27,6 +29,9 @@ function NercLib:AddUtilsModule(addon)
     ---@param onUpdate fun(progress: integer, maxProgress: integer)?
     ---@param onFinish fun()?
     function Utils:BatchExecution(funcList, onUpdate, onFinish)
+        assert(type(funcList) == "table", "Function list not provided")
+        assert(type(onUpdate) == "function" or onUpdate == nil, "OnUpdate not a function")
+        assert(type(onFinish) == "function" or onFinish == nil, "OnFinish not a function")
         local frameRate = GetFramerate()
         if frameRate == 0 then frameRate = 1 end
         local delay = 1 / frameRate

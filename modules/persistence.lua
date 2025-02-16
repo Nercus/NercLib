@@ -50,7 +50,7 @@ function NercLib:AddPersistenceModule(addon)
 
         -- remove the last argument from the tables
         arg[#arg] = nil
-        -- iterate table and create subtables if needed and on last iteration set the value
+        -- iterate table and create sub-tables if needed and on last iteration set the value
         ---@type table
         local currentTable = DB -- start at the root
         for index, key in ipairs(arg) do
@@ -103,7 +103,7 @@ function NercLib:AddPersistenceModule(addon)
             if not dbTable[key] then
                 return
             end
-            -- this annotation is not fully correct as we might already have traversed into a subtable
+            -- this annotation is not fully correct as we might already have traversed into a sub-table
             dbTable = dbTable[key] ---@type table
         end
     end

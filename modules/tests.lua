@@ -11,6 +11,8 @@ function NercLib:AddTestsModule(addon)
 
 
     function Tests:FormatTestError(message, stack)
+        assert(type(message) == "string", "Message not provided")
+        assert(type(stack) == "string", "Stack not provided")
         -- split stack on new lines and remove the first line
         local stackLines = { strsplit("\n", stack) }
         return string.format("%s\n%s", message, stackLines[2])
@@ -30,6 +32,7 @@ function NercLib:AddTestsModule(addon)
     end
 
     function Tests:ToString(value)
+        assert(value ~= nil, "Value not provided")
         if not value then
             return "nil"
         end
@@ -42,6 +45,8 @@ function NercLib:AddTestsModule(addon)
     ---@param name string
     ---@param func fun(test: Test)
     function Tests:Test(name, func)
+        assert(type(name) == "string", "Test Name not provided")
+        assert(type(func) == "function", "Test Function not provided")
         if (not self.tests) then
             self.tests = {}
         end

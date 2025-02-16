@@ -174,6 +174,9 @@ function NercLib:AddOptionModule(addon)
     ---@param label string
     ---@return OptionObjectVariantsTyped | nil
     function Options:GetOptionElementData(category, label)
+        assert(self.categories[category], "Category must be registered")
+        assert(self.options[category], "Category must have options")
+        assert(label, "Option must have a label")
         local categoryOptions = self.options[category]
         for _, option in ipairs(categoryOptions) do
             if option and option.label == label then

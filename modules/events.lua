@@ -13,6 +13,9 @@ function NercLib:AddEventsModule(addon)
     ---@param event WowEvent
     ---@param func function
     function Events:RegisterEvent(event, func)
+        assert(event, "Event must be provided")
+        assert(func, "Function must be provided")
+
         if not registeredEvents[event] then
             registeredEvents[event] = {}
         end
@@ -23,6 +26,7 @@ function NercLib:AddEventsModule(addon)
     ---unregister event
     ---@param event WowEvent
     function Events:UnregisterEvent(event)
+        assert(event, "Event must be provided")
         registeredEvents[event] = nil
         AddonEventFrame:UnregisterEvent(event)
     end
@@ -31,6 +35,8 @@ function NercLib:AddEventsModule(addon)
     ---@param event WowEvent
     ---@param func function
     function Events:UnregisterEventForFunction(event, func)
+        assert(event, "Event must be provided")
+        assert(func, "Function must be provided")
         if registeredEvents[event] then
             for i, f in ipairs(registeredEvents[event]) do
                 if f == func then
@@ -50,6 +56,8 @@ function NercLib:AddEventsModule(addon)
     ---@param func function
     ---@return boolean
     function Events:IsEventRegisteredForFunction(event, func)
+        assert(event, "Event must be provided")
+        assert(func, "Function must be provided")
         for _, f in ipairs(registeredEvents[event] or {}) do
             if f == func then
                 return true
