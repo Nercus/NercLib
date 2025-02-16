@@ -56,7 +56,7 @@ function NercLib:CreateAddon(addonName, tableName)
     self:AddOptionModule(addon)
 
     local Debug = addon:GetModule("Debug")
-    addon.Debug = Debug
+    addon.Debug = Debug.Debug
 
 
     --- Add localization
