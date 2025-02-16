@@ -11,12 +11,10 @@ function NercLib:AddSlashCommandModule(addon)
     local commandList = {} ---@type table<string, function>
     local commandHelpStrings = {} ---@type table<string, string>
 
-    local SLASH_PREFIX = string.format("SLASH_%s", addon.name:upper())
-
     local addedTriggers = 1
     function SlashCommand:SetSlashTrigger(trigger)
         assert(type(trigger) == "string", "Slash command trigger not provided")
-        local GLOBAL_NAME = string.format("%s%d", SLASH_PREFIX, addedTriggers)
+        local GLOBAL_NAME = string.format("SLASH_%s%d", addon.name:upper(), addedTriggers)
         ---@diagnostic disable-next-line: no-unknown
         _G[GLOBAL_NAME] = trigger
         addedTriggers = addedTriggers + 1
@@ -59,9 +57,8 @@ function NercLib:AddSlashCommandModule(addon)
         end
     end
 
-
     ---@type function
-    SlashCmdList[SLASH_PREFIX] = SlashCommandHandler
+    SlashCmdList[addon.name:upper()] = SlashCommandHandler
 
     ---Add a slash command to the list
     ---@param command string
