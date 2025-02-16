@@ -32,7 +32,6 @@ function NercLib:CreateAddon(addonName, tableName)
     function addon:GetModule(name)
         assert(self.modules, "Modules not initialized")
         assert(name, "Module name not provided")
-        assert(self.modules[name], "Module not found: " .. name)
 
         if (not self.modules or not self.modules[name]) then
             local m = {}
