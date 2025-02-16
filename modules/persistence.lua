@@ -52,7 +52,7 @@ function NercLib:AddPersistenceModule(addon)
         arg[#arg] = nil
         -- iterate table and create sub-tables if needed and on last iteration set the value
         ---@type table
-        local currentTable = DB -- start at the root
+        local currentTable = _G[addon.tableName] -- start at the root
         for index, key in ipairs(arg) do
             if index == #arg then
                 break
@@ -77,7 +77,8 @@ function NercLib:AddPersistenceModule(addon)
         local arg = { ... }
 
         ---@type table
-        local dbTable = DB
+        local dbTable = _G[addon.tableName]
+        addon:GetModule("Debug"):Debug(dbTable)
         for index, key in ipairs(arg) do
             if index == #arg then
                 return dbTable[key]
@@ -95,7 +96,7 @@ function NercLib:AddPersistenceModule(addon)
     function SavedVars:DeleteVar(...)
         -- move all arguments into a table
         local arg = { ... }
-        local dbTable = DB
+        local dbTable = _G[addon.tableName]
         for index, key in ipairs(arg) do
             if index == #arg then
                 dbTable[key] = nil ---@type nil
@@ -111,9 +112,6 @@ function NercLib:AddPersistenceModule(addon)
     ---@param prevKeys string | table
     ---@param newKeys string | table
     function SavedVars:MigrateVar(prevKeys, newKeys)
-        if not DB then
-            DB = {}
-        end
         local prevValue = self:GetVar(type(prevKeys) == "table" and unpack(prevKeys) or prevKeys --[[@as string]])
         if prevValue ~= nil then
             self:SetVar(type(newKeys) == "table" and unpack(newKeys) or newKeys, prevValue)
