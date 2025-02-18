@@ -71,13 +71,19 @@
     "wowAPI.luals.configurationScope": "User",
     "wowAPI.luals.defineKnownGlobals": false,
     "cSpell.words": [
+        "BOTTOMLEFT",
+        "BOTTOMRIGHT",
+        "checkmark",
         "colorpicker",
         "Colorpicker",
         "debugstack",
+        "FULLSCREEN",
         "getglobal",
         "Nerc",
         "RESETSAVEDVARS",
         "strsplit",
+        "TOPLEFT",
+        "TOPRIGHT",
         "yxxx"
     ],
     "Lua.diagnostics.globals": [
