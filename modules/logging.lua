@@ -19,7 +19,7 @@ function NercLib:AddLoggingModule(addon)
     local Text = addon:GetModule("Text")
 
     local function FormatLogMessage(messageInfo)
-        local color = unpack(LOGGING_LEVEL_COLOR[messageInfo.level])
+        local color = LOGGING_LEVEL_COLOR[messageInfo.level]
         return string.format("[%s] %s", Text:WrapTextInColor(messageInfo.timestamp, TIMESTAMP_COLOR),
             Text:WrapTextInColor(messageInfo.message, color))
     end
