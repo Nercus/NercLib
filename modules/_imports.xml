@@ -11,4 +11,5 @@
     <Script file="text.lua" />
     <Script file="utils.lua" />
     <Script file="localization.lua" />
+    <Script file="logging.lua" />
 </Ui>

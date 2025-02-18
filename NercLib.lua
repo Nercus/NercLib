@@ -55,6 +55,7 @@ function NercLib:CreateAddon(addonName, tableName)
     self:AddDebugModule(addon)
     self:AddOptionModule(addon)
     self:AddLocalizationModule(addon)
+    self:AddLoggingModule(addon)
 
     addons[addonName] = addon
     return addon
