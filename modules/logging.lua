@@ -28,6 +28,8 @@ function NercLib:AddLoggingModule(addon)
             return
         end
 
+        print("update log text")
+
         local logText = ""
         local levels = loggingWindow.enabledFilters
         local levelCount = 0
@@ -145,10 +147,26 @@ function NercLib:AddLoggingModule(addon)
 
 
         loggingWindow.searchFilter = ""
-        local searchBox = CreateFrame("EditBox", nil, loggingWindow, "SearchBoxTemplate")
+        local searchBox = CreateFrame("EditBox", nil, loggingWindow, "InputBoxInstructionsTemplate")
         searchBox:SetSize(1, 18)
         searchBox:SetPoint("TOPLEFT", lastElement, "TOPRIGHT", 35, 0)
         searchBox:SetPoint("RIGHT", loggingWindow.lineCount, "RIGHT", -35, 0)
+        searchBox.searchIcon = searchBox:CreateTexture(nil, "ARTWORK")
+        searchBox.searchIcon:SetAtlas("common-search-magnifyingglass")
+        searchBox.searchIcon:SetSize(10, 10)
+        searchBox.searchIcon:SetPoint("LEFT", searchBox, "LEFT", 1, -1)
+
+        local searchBoxClearButton = CreateFrame("Button", nil, searchBox)
+        searchBoxClearButton:SetSize(16, 16)
+        searchBoxClearButton:SetPoint("RIGHT", searchBox, "RIGHT", -3, 0)
+        searchBoxClearButton:SetNormalAtlas("common-search-clearbutton")
+        searchBoxClearButton:SetHighlightAtlas("common-roundhighlight")
+        searchBoxClearButton:SetScript("OnClick", function()
+            searchBox:SetText("")
+            loggingWindow.searchFilter = ""
+            UpdateLogText()
+        end)
+
         searchBox:SetScript("OnTextChanged", function(self)
             local Utils = addon:GetModule("Utils")
             Utils:DebounceChange(function()
