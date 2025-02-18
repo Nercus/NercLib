@@ -7,7 +7,7 @@ if not NercLib then return end
 
 _G.NercLib = NercLib
 
----@alias DEFAULT_MODULES "Debug"|"Events"|"Menu"|"Options"|"SavedVars"|"SlashCommand"|"Tests"|"Text"|"Utils"
+---@alias DEFAULT_MODULES "Debug"|"Events"|"Menu"|"Options"|"SavedVars"|"SlashCommand"|"Tests"|"Text"|"Utils"|"Localization"|"Logging"
 ---@type table<string, NercLibAddon>
 local addons = {}
 
