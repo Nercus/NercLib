@@ -1,6 +1,7 @@
 ---@class NercLibPrivate : NercLib
 local NercLib = _G.NercLib
 
+---@enum (key) LogLevel
 local LOGGING_LEVEL_COLOR = {
     DEBUG = CreateColor(0.7, 0.8, 0.9),
     INFO = CreateColor(0.2, 0.8, 0.2),
@@ -179,6 +180,8 @@ function NercLib:AddLoggingModule(addon)
         end
     end
 
+    ---@param message string
+    ---@param level LogLevel
     function Logging:Log(message, level)
         if not SavedVars:GetVar("logging") then
             if loggingWindow then
