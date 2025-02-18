@@ -35,15 +35,17 @@ function NercLib:AddLoggingModule(addon)
             levelCount = levelCount + 1
         end
 
+        local searchText = loggingWindow.searchFilter
         local totalLines = 0
         local startIndex = math.max(1, #loggingWindow.lines - 1000 + 1)
         for i = startIndex, #loggingWindow.lines do
             local line = loggingWindow.lines[i]
-            if levelCount == 0 or levels[line.level] then
+            if (levelCount == 0 or levels[line.level]) and (searchText == "" or string.find(line.message:lower(), searchText:lower())) then
                 logText = logText .. FormatLogMessage(line) .. "\n"
                 totalLines = totalLines + 1
             end
         end
+
         loggingWindow.lineCount:SetText(string.format("#%d", totalLines))
         loggingWindow.scrollChild:SetText(logText)
     end
@@ -138,6 +140,22 @@ function NercLib:AddLoggingModule(addon)
             checkbox:Show()
             lastElement = checkbox
         end
+
+
+
+
+        loggingWindow.searchFilter = ""
+        local searchBox = CreateFrame("EditBox", nil, loggingWindow, "SearchBoxTemplate")
+        searchBox:SetSize(1, 18)
+        searchBox:SetPoint("TOPLEFT", lastElement, "TOPRIGHT", 35, 0)
+        searchBox:SetPoint("RIGHT", loggingWindow.lineCount, "RIGHT", -35, 0)
+        searchBox:SetScript("OnTextChanged", function(self)
+            local Utils = addon:GetModule("Utils")
+            Utils:DebounceChange(function()
+                loggingWindow.searchFilter = self:GetText()
+                UpdateLogText()
+            end, 1)
+        end)
     end
 
 
