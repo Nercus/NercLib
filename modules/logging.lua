@@ -175,7 +175,7 @@ function NercLib:AddLoggingModule(addon)
                 loggingWindow.searchFilter = self:GetText()
                 print("search filter: " .. loggingWindow.searchFilter)
                 UpdateLogText()
-            end, 1)
+            end, 1)()
         end)
     end
 
