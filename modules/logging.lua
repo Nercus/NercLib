@@ -10,6 +10,8 @@ local LOGGING_LEVEL_COLOR = {
 }
 local TIMESTAMP_COLOR = CreateColor(0.5, 0.5, 0.5)
 
+-- TODO: rework like https://github.com/Noshei/Warband-Bank-Log/blob/main/Search.lua and https://github.com/Noshei/Warband-Bank-Log/blob/main/Display.lua
+
 ---@param addon NercLibAddon
 function NercLib:AddLoggingModule(addon)
     local loggingWindow
@@ -27,8 +29,6 @@ function NercLib:AddLoggingModule(addon)
         if not loggingWindow then
             return
         end
-
-        print("update log text")
 
         local logText = ""
         local levels = loggingWindow.enabledFilters
@@ -143,9 +143,6 @@ function NercLib:AddLoggingModule(addon)
             lastElement = checkbox
         end
 
-
-
-
         loggingWindow.searchFilter = ""
         local searchBox = CreateFrame("EditBox", nil, loggingWindow, "InputBoxInstructionsTemplate")
         searchBox:SetSize(1, 18)
@@ -176,7 +173,7 @@ function NercLib:AddLoggingModule(addon)
                 loggingWindow.searchFilter = self:GetText()
                 print("search filter: " .. loggingWindow.searchFilter)
                 UpdateLogText()
-            end, 1)()
+            end, 0.5)()
         end)
     end
 
