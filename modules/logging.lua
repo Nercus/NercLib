@@ -15,7 +15,6 @@ function NercLib:AddLoggingModule(addon)
     local loggingWindow
     ---@class Logging
     local Logging = addon:GetModule("Logging")
-
     local Text = addon:GetModule("Text")
 
     local function FormatLogMessage(messageInfo)
@@ -142,11 +141,28 @@ function NercLib:AddLoggingModule(addon)
     end
 
 
+    local loggingWindowShown = false
     local function OpenLoggingWindow()
         if not loggingWindow then
             CreateLoggingWindow()
         end
         loggingWindow:Show()
+        loggingWindowShown = true
+    end
+
+    local function CloseLoggingWindow()
+        if loggingWindow then
+            loggingWindow:Hide()
+            loggingWindowShown = false
+        end
+    end
+
+    local function ToggleLoggingWindow()
+        if loggingWindowShown then
+            CloseLoggingWindow()
+        else
+            OpenLoggingWindow()
+        end
     end
 
     local function AddLogLine(message, level)
@@ -170,7 +186,6 @@ function NercLib:AddLoggingModule(addon)
 
     function Logging:EnableLogging()
         SavedVars:SetVar("logging", true)
-        OpenLoggingWindow()
     end
 
     function Logging:DisableLogging()
@@ -189,13 +204,14 @@ function NercLib:AddLoggingModule(addon)
             end
             return
         end
-        OpenLoggingWindow()
         AddLogLine(message, level)
     end
 
     local SlashCommand = addon:GetModule("SlashCommand")
-
-
-    SlashCommand:AddSlashCommand("enableLogging", function() Logging:EnableLogging() end, "Enable logging")
-    SlashCommand:AddSlashCommand("disableLogging", function() Logging:DisableLogging() end, "Disable logging")
+    SlashCommand:AddSlashCommand("log", ToggleLoggingWindow, "Toggle logging window")
+    local loggingEnabled = SavedVars:GetVar("logging")
+    if loggingEnabled then
+        SlashCommand:AddSlashCommand("enableLogging", function() Logging:EnableLogging() end, "Enable logging")
+        SlashCommand:AddSlashCommand("disableLogging", function() Logging:DisableLogging() end, "Disable logging")
+    end
 end
