@@ -242,7 +242,7 @@ function NercLib:AddLoggingModule(addon)
     end
 
     ---@param message string
-    ---@param level? LogLevel
+    ---@param level LogLevel?
     function Logging:Log(message, level)
         if not SavedVars:GetVar("logging") then
             if Logging.loggingWindow then
