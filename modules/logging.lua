@@ -44,8 +44,9 @@ function NercLib:AddLoggingModule(addon)
         local enabledFilters = Logging.loggingWindow.enabledFilters
         local lineCount = Logging.loggingWindow.lineCount
         local scrollBox = Logging.loggingWindow.scrollBox
-        scrollBox:SetScrollPercentage(0)
+        local loadingIndicator = Logging.loggingWindow.loadingIndicator
 
+        scrollBox:SetScrollPercentage(0)
 
         DP:Flush()
         if #Logging.lines == 0 then
@@ -65,6 +66,7 @@ function NercLib:AddLoggingModule(addon)
         end
         lineCount:SetText(tostring(#filtered))
         DP:InsertTable(filtered)
+        loadingIndicator:Hide()
     end
 
     local function CreateLoggingWindow()
@@ -100,6 +102,13 @@ function NercLib:AddLoggingModule(addon)
         loggingWindow:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()
         end)
+
+        local loadingIndicator = CreateFrame("Frame", nil, loggingWindow, "SpinnerTemplate")
+        loadingIndicator:SetPoint("CENTER")
+        loadingIndicator:Hide()
+        loggingWindow.loadingIndicator = loadingIndicator
+
+
 
         local resizeButton = CreateFrame("Button", nil, loggingWindow, "PanelResizeButtonTemplate")
         resizeButton:SetPoint("BOTTOMRIGHT", -3, 4)
@@ -169,6 +178,9 @@ function NercLib:AddLoggingModule(addon)
             checkbox:SetChecked(true)
             checkbox:SetScript("OnClick", function(checkBoxFrame)
                 loggingWindow.enabledFilters[level] = checkBoxFrame:GetChecked()
+                if not loadingIndicator:IsShown() then
+                    loadingIndicator:Show()
+                end
                 Utils:DebounceChange(function()
                     UpdateWindowData()
                 end, 0.5)()
@@ -210,10 +222,21 @@ function NercLib:AddLoggingModule(addon)
         searchBoxClearButton:SetScript("OnClick", function()
             searchBox:SetText("")
             loggingWindow.searchFilter = ""
+            if not loadingIndicator:IsShown() then
+                loadingIndicator:Show()
+            end
+            Utils:DebounceChange(function()
+                UpdateWindowData()
+            end, 0.5)()
         end)
 
+
+        -- FIXME: Triggers when resizing the frame
         searchBox:SetScript("OnTextChanged", function(searchBoxFrame)
             loggingWindow.searchFilter = searchBoxFrame:GetText()
+            if not loadingIndicator:IsShown() then
+                loadingIndicator:Show()
+            end
             Utils:DebounceChange(function()
                 UpdateWindowData()
             end, 0.5)()
@@ -226,6 +249,9 @@ function NercLib:AddLoggingModule(addon)
     local function AddLogLine(messageInfo)
         table.insert(Logging.lines, messageInfo)
         if not Logging.loggingWindow then return end
+        if not Logging.loggingWindow.loadingIndicator:IsShown() then
+            Logging.loggingWindow.loadingIndicator:Show()
+        end
         Utils:DebounceChange(function()
             UpdateWindowData()
         end, 0.5)()
