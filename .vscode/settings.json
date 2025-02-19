@@ -86,6 +86,7 @@
         "RESETSAVEDVARS",
         "roundhighlight",
         "strsplit",
+        "tinsert",
         "TOPLEFT",
         "TOPRIGHT",
         "wordwrap",
