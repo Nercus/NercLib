@@ -45,10 +45,11 @@ function NercLib:AddLoggingModule(addon)
         local lineCount = Logging.loggingWindow.lineCount
         local scrollBox = Logging.loggingWindow.scrollBox
         scrollBox:SetScrollPercentage(0)
-        lineCount:SetText(tostring(#Logging.lines))
+
 
         DP:Flush()
         if #Logging.lines == 0 then
+            lineCount:SetText(tostring(0))
             return
         end
 
@@ -62,6 +63,7 @@ function NercLib:AddLoggingModule(addon)
                 end
             end
         end
+        lineCount:SetText(tostring(#filtered))
         DP:InsertTable(filtered)
     end
 
