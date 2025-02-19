@@ -139,7 +139,8 @@ function NercLib:AddLoggingModule(addon)
 
         ---@param frame LogEntryFrame
         ---@param messageInfo LogMessageInfo
-        local function Initializer(frame, messageInfo)
+        local function Initializer(_, frame, messageInfo)
+            print(_, frame, messageInfo)
             -- one time initialization
             if not frame.init then
                 frame:SetSize(1, 20)
@@ -157,8 +158,8 @@ function NercLib:AddLoggingModule(addon)
                 Text:WrapTextInColor(messageInfo.message, color))
             frame.message:SetText(logMessage)
         end
-
-        scrollView:SetElementInitializer("Frame", Initializer)
+        print("set initializer")
+        scrollView:SetElementInitializer("Button", Initializer)
         loggingWindow.DataProvider:InsertTable(Logging.lines)
         loggingWindow:Show()
 
@@ -229,8 +230,8 @@ function NercLib:AddLoggingModule(addon)
 
 
     local function AddLogLine(messageInfo)
-        if not Logging.loggingWindow then return end
         table.insert(Logging.lines, messageInfo)
+        if not Logging.loggingWindow then return end
         Utils:DebounceChange(function()
             UpdateWindowData()
         end, 0.5)()
