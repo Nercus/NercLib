@@ -272,6 +272,7 @@ function NercLib:AddLoggingModule(addon)
     function Logging:EnableLogging()
         SavedVars:SetVar("logging", true)
         UpdateSlashCommandAvailability()
+        OpenLoggingWindow()
     end
 
     function Logging:DisableLogging()
