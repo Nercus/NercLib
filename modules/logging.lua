@@ -189,12 +189,12 @@ function NercLib:AddLoggingModule(addon)
             checkbox.label = checkbox:CreateFontString(nil, "OVERLAY", "GameFontNormalTiny")
             checkbox.label:SetPoint("LEFT", checkbox, "RIGHT", 0, 0)
             checkbox.label:SetText(level)
-            checkbox.label:SetWidth(30)
+            checkbox.label:SetWidth(40)
             checkbox.label:SetJustifyH("LEFT")
             loggingWindow.enabledFilters[level] = true
 
             if lastElement then
-                checkbox:SetPoint("TOPLEFT", lastElement, "TOPRIGHT", 35, 0)
+                checkbox:SetPoint("TOPLEFT", lastElement, "TOPRIGHT", 45, 0)
             else
                 checkbox:SetPoint("BOTTOMLEFT", loggingWindow, "BOTTOMLEFT", 5, 2)
             end
