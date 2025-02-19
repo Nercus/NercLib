@@ -78,7 +78,7 @@ function NercLib:AddLoggingModule(addon)
         loggingWindow:EnableMouse(true)
         loggingWindow:RegisterForDrag("LeftButton")
         loggingWindow:SetResizable(true)
-        loggingWindow:SetMinResize(200, 200)
+        loggingWindow:SetResizeBounds(200, 200, GetScreenWidth(), GetScreenHeight())
         loggingWindow:SetMovable(true)
         loggingWindow:SetScript("OnMouseDown", function(self)
             if not self.NineSlice.TopEdge:IsMouseOver() then
