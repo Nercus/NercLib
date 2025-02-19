@@ -98,11 +98,14 @@ function NercLib:AddDebugModule(addon)
 
 
     local function setDevMode()
+        local Logging = addon:GetModule("Logging")
         local devModeEnabled = SavedVars:GetVar("devMode")
         if (devModeEnabled) then
             SavedVars:SetVar("devMode", false)
+            Logging:EnableLogging()
         else
             SavedVars:SetVar("devMode", true)
+            Logging:DisableLogging()
         end
         loadDevAddons(not devModeEnabled)
         ReloadUI()
@@ -326,7 +329,6 @@ function NercLib:AddDebugModule(addon)
             C_Timer.After(1, function()
                 LDBIcon:Show("BugSack")
                 LDBIcon:Show(addon.name)
-                Logging:EnableLogging()
                 Logging:ToggleLoggingWindow()
             end)
         else
@@ -342,7 +344,6 @@ function NercLib:AddDebugModule(addon)
             C_Timer.After(1, function()
                 LDBIcon:Hide("BugSack")
                 LDBIcon:Hide(addon.name)
-                Logging:DisableLogging()
             end)
         end
     end
