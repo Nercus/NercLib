@@ -96,6 +96,7 @@ function NercLib:AddLoggingModule(addon)
         local resizeButton = CreateFrame("Button", nil, loggingWindow, "PanelResizeButtonTemplate")
         resizeButton:SetPoint("BOTTOMRIGHT", -3, 4)
         resizeButton:SetSize(12, 12)
+        resizeButton:RegisterForDrag("LeftButton")
         resizeButton:Init(self, 200, 200, GetScreenWidth(), GetScreenHeight())
 
         local lineCount = loggingWindow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
