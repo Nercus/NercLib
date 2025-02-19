@@ -77,6 +77,9 @@ function NercLib:AddLoggingModule(addon)
         loggingWindow:SetMovable(true)
         loggingWindow:EnableMouse(true)
         loggingWindow:RegisterForDrag("LeftButton")
+        loggingWindow:SetResizable(true)
+        loggingWindow:SetMinResize(200, 200)
+        loggingWindow:SetMovable(true)
         loggingWindow:SetScript("OnMouseDown", function(self)
             if not self.NineSlice.TopEdge:IsMouseOver() then
                 return
@@ -220,15 +223,13 @@ function NercLib:AddLoggingModule(addon)
         end
     end
 
-    local function ToggleLoggingWindow()
+    function Logging:ToggleLoggingWindow()
         if loggingWindowShown then
             CloseLoggingWindow()
         else
             OpenLoggingWindow()
         end
     end
-
-
 
     function Logging:EnableLogging()
         SavedVars:SetVar("logging", true)
@@ -260,7 +261,7 @@ function NercLib:AddLoggingModule(addon)
         })
     end
 
-    SlashCommand:AddSlashCommand("log", ToggleLoggingWindow, "Toggle logging window")
+    SlashCommand:AddSlashCommand("log", function() Logging:ToggleLoggingWindow() end, "Toggle logging window")
     local loggingEnabled = SavedVars:GetVar("logging")
     if loggingEnabled then
         SlashCommand:AddSlashCommand("enableLogging", function() Logging:EnableLogging() end, "Enable logging")

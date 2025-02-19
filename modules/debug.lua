@@ -316,8 +316,9 @@ function NercLib:AddDebugModule(addon)
         if loadedAddon ~= addon.name then
             return
         end
+        local Logging = addon:GetModule("Logging")
+
         local devModeEnabled = SavedVars:GetVar("devMode")
-        print("devModeEnabled", devModeEnabled)
         local LDBIcon = LibStub("LibDBIcon-1.0", true)
         if (devModeEnabled) then
             Text:Print("Dev mode enabled")
@@ -325,6 +326,8 @@ function NercLib:AddDebugModule(addon)
             C_Timer.After(1, function()
                 LDBIcon:Show("BugSack")
                 LDBIcon:Show(addon.name)
+                Logging:EnableLogging()
+                Logging:ToggleLoggingWindow()
             end)
         else
             -- check what addons are loaded right now and save them
@@ -339,6 +342,7 @@ function NercLib:AddDebugModule(addon)
             C_Timer.After(1, function()
                 LDBIcon:Hide("BugSack")
                 LDBIcon:Hide(addon.name)
+                Logging:DisableLogging()
             end)
         end
     end
