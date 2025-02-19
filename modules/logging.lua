@@ -123,8 +123,8 @@ function NercLib:AddLoggingModule(addon)
         loggingWindow.scrollBox = scrollBox
 
         local scrollBar = CreateFrame("EventFrame", nil, loggingWindow, "MinimalScrollBar")
-        scrollBar:SetPoint("TOPRIGHT", loggingWindow, "TOPRIGHT", -10, -30)
-        scrollBar:SetPoint("BOTTOMRIGHT", loggingWindow, "BOTTOMRIGHT", -10, 5)
+        scrollBar:SetPoint("TOPRIGHT", loggingWindow, "TOPRIGHT", -10, -35)
+        scrollBar:SetPoint("BOTTOMRIGHT", loggingWindow, "BOTTOMRIGHT", -10, 10)
 
         loggingWindow.DataProvider = CreateDataProvider()
         local scrollView = CreateScrollBoxListLinearView()
