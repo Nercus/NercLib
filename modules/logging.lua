@@ -145,8 +145,11 @@ function NercLib:AddLoggingModule(addon)
             end
 
             local color = LOGGING_LEVEL_COLOR[messageInfo.level]
-            local logMessage = string.format("[%s] %s", Text:WrapTextInColor(messageInfo.timestamp, TIMESTAMP_COLOR),
-                Text:WrapTextInColor(messageInfo.message, color))
+            local logMessage = string.format("[%s] (%s) %s",
+                Text:WrapTextInColor(messageInfo.timestamp, TIMESTAMP_COLOR),
+                Text:WrapTextInColor(messageInfo.level, color),
+                Text:WrapTextInColor(messageInfo.message, color)
+            )
             frame.message:SetText(logMessage)
         end
         scrollView:SetElementExtent(20)
