@@ -96,6 +96,7 @@
         "StaticPopup_Show",
         "CreateDataProvider",
         "CreateScrollBoxListLinearView",
-        "ScrollUtil"
+        "ScrollUtil",
+        "UISpecialFrames"
     ],
 }
