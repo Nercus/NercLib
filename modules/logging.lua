@@ -1,6 +1,7 @@
 ---@class NercLibPrivate : NercLib
 local NercLib = _G.NercLib
 
+
 ---@enum (key) LogLevel
 local LOGGING_LEVEL_COLOR = {
     DEBUG = CreateColor(0.7, 0.8, 0.9),
@@ -10,50 +11,68 @@ local LOGGING_LEVEL_COLOR = {
 }
 local TIMESTAMP_COLOR = CreateColor(0.5, 0.5, 0.5)
 
--- TODO: rework like https://github.com/Noshei/Warband-Bank-Log/blob/main/Search.lua and https://github.com/Noshei/Warband-Bank-Log/blob/main/Display.lua
+
+---@class LogEntryFrame : Frame
+---@field message FontString
+
+---@class LogMessageInfo
+---@field message string
+---@field timestamp string
+---@field level LogLevel
 
 ---@param addon NercLibAddon
 function NercLib:AddLoggingModule(addon)
-    local loggingWindow
     ---@class Logging
+    ---@field lines LogMessageInfo[]
     local Logging = addon:GetModule("Logging")
+    Logging.lines = {}
+
     local Text = addon:GetModule("Text")
+    local Utils = addon:GetModule("Utils")
+    local SavedVars = addon:GetModule("SavedVars")
+    local SlashCommand = addon:GetModule("SlashCommand")
 
-    local function FormatLogMessage(messageInfo)
-        local color = LOGGING_LEVEL_COLOR[messageInfo.level]
-        return string.format("[%s] %s", Text:WrapTextInColor(messageInfo.timestamp, TIMESTAMP_COLOR),
-            Text:WrapTextInColor(messageInfo.message, color))
-    end
 
-    local function UpdateLogText()
-        if not loggingWindow then
+    local function UpdateWindowData()
+        if not Logging.loggingWindow then return end
+        local DP = Logging.loggingWindow.DataProvider
+        local searchText = Logging.loggingWindow.searchFilter
+        local enabledFilters = Logging.loggingWindow.enabledFilters
+        DP:Flush()
+        if #Logging.lines == 0 then
+            return
+        end
+        if #Logging.lines < 1000 then
+            ---@type LogMessageInfo[]
+            local filtered = {}
+            -- filter by search and selected log levels
+            for _, line in ipairs(Logging.lines) do
+                if not searchText or string.find(line.message, searchText) then
+                    if enabledFilters[line.level] then
+                        table.insert(filtered, line)
+                    end
+                end
+            end
+            DP:InsertTable(filtered)
             return
         end
 
-        local logText = ""
-        local levels = loggingWindow.enabledFilters
-        local levelCount = 0
-        for _, _ in pairs(levels) do
-            levelCount = levelCount + 1
+        -- create a list of functions that check for the search and log level filters
+        local funcList = {}
+        for _, line in ipairs(Logging.lines) do
+            table.insert(funcList, function()
+                if not searchText or string.find(line.message, searchText) then
+                    if enabledFilters[line.level] then
+                        DP:Insert(line)
+                    end
+                end
+            end)
         end
-
-        local searchText = loggingWindow.searchFilter
-        local totalLines = 0
-        local startIndex = math.max(1, #loggingWindow.lines - 1000 + 1)
-        for i = startIndex, #loggingWindow.lines do
-            local line = loggingWindow.lines[i]
-            if (levelCount == 0 or levels[line.level]) and (searchText == "" or string.find(line.message:lower(), searchText:lower())) then
-                logText = logText .. FormatLogMessage(line) .. "\n"
-                totalLines = totalLines + 1
-            end
-        end
-
-        loggingWindow.lineCount:SetText(string.format("#%d", totalLines))
-        loggingWindow.scrollChild:SetText(logText)
+        Utils:BatchExecution(funcList)
     end
 
     local function CreateLoggingWindow()
-        loggingWindow = CreateFrame("Frame", nil, UIParent, "DefaultPanelTemplate")
+        local loggingWindow = CreateFrame("Frame", nil, UIParent, "DefaultPanelTemplate")
         loggingWindow:SetSize(500, 200)
         loggingWindow:SetMovable(true)
         loggingWindow:EnableMouse(true)
@@ -70,47 +89,46 @@ function NercLib:AddLoggingModule(addon)
         loggingWindow:SetTitle(addon.name .. " Logging")
         loggingWindow:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 5, 5)
         loggingWindow:SetResizable(true)
-        loggingWindow.lines = {}
 
-        local resizeButton = CreateFrame("Button", nil, loggingWindow)
+        local resizeButton = CreateFrame("Button", nil, loggingWindow, "PanelResizeButtonTemplate")
         resizeButton:SetPoint("BOTTOMRIGHT", -3, 4)
         resizeButton:SetSize(12, 12)
-        resizeButton:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
-        resizeButton:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
-        resizeButton:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+        resizeButton:Init(self, 200, 200, GetScreenWidth(), GetScreenHeight())
 
         local lineCount = loggingWindow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         lineCount:SetPoint("BOTTOMRIGHT", resizeButton, "BOTTOMLEFT", -10, 0)
         lineCount:SetText("0")
         loggingWindow.lineCount = lineCount
 
-        local scrollFrame = CreateFrame("ScrollFrame", nil, loggingWindow, "ScrollFrameTemplate")
-        scrollFrame:SetPoint("TOPLEFT", loggingWindow, "TOPLEFT", 10, -30)
-        scrollFrame:SetPoint("BOTTOMRIGHT", -25, 20)
-        loggingWindow.scrollFrame = scrollFrame
 
-        local textBox = CreateFrame("EditBox", nil, scrollFrame)
-        textBox:SetSize(scrollFrame:GetSize())
-        textBox:SetMultiLine(true)
-        textBox:SetAutoFocus(false)
-        textBox:SetFontObject("ChatFontNormal")
-        scrollFrame:SetScrollChild(textBox)
-        loggingWindow.scrollChild = textBox
+        local scrollBox = CreateFrame("Frame", nil, loggingWindow, "WowScrollBoxList")
+        scrollBox:SetPoint("TOPLEFT", loggingWindow, "TOPLEFT", 10, -30)
+        scrollBox:SetPoint("BOTTOMRIGHT", -25, 20)
+        loggingWindow.scrollBox = scrollBox
 
+        local scrollBar = CreateFrame("EventFrame", nil, loggingWindow, "MinimalScrollBar")
+        scrollBar:SetPoint("TOPLEFT", loggingWindow, "TOPRIGHT", 5, -5)
+        scrollBar:SetPoint("BOTTOMLEFT", loggingWindow, "BOTTOMRIGHT", 5, 5)
 
-        resizeButton:SetScript("OnMouseDown", function(button, mouseButton)
-            if mouseButton == "LeftButton" then
-                loggingWindow:StartSizing("BOTTOMRIGHT")
-                button:GetHighlightTexture():Hide() -- more noticeable
-            end
-        end)
-        resizeButton:SetScript("OnMouseUp", function(button)
-            loggingWindow:StopMovingOrSizing()
-            button:GetHighlightTexture():Show()
-            textBox:SetWidth(scrollFrame:GetWidth())
-        end)
+        loggingWindow.DataProvider = CreateDataProvider()
+        local scrollView = CreateScrollBoxListLinearView()
+        loggingWindow.scrollView = scrollView
+        scrollView:SetDataProvider(loggingWindow.DataProvider)
+
+        ScrollUtil.InitScrollBoxListWithScrollBar(scrollBox, scrollBar, scrollView)
+
+        ---@param frame LogEntryFrame
+        ---@param messageInfo LogMessageInfo
+        local function Initializer(frame, messageInfo)
+            local color = LOGGING_LEVEL_COLOR[messageInfo.level]
+            local logMessage = string.format("[%s] %s", Text:WrapTextInColor(messageInfo.timestamp, TIMESTAMP_COLOR),
+                Text:WrapTextInColor(messageInfo.message, color))
+            frame.message:SetText(logMessage)
+        end
+
+        scrollView:SetElementInitializer("NercLibLoggingListEntryTemplate", Initializer)
+        loggingWindow.DataProvider:InsertTable(Logging.lines)
         loggingWindow:Show()
-
 
         loggingWindow.enabledFilters = {}
         -- logging filter buttons
@@ -124,7 +142,9 @@ function NercLib:AddLoggingModule(addon)
             checkbox:SetChecked(true)
             checkbox:SetScript("OnClick", function(checkBoxFrame)
                 loggingWindow.enabledFilters[level] = checkBoxFrame:GetChecked()
-                UpdateLogText()
+                Utils:DebounceChange(function()
+                    UpdateWindowData()
+                end, 0.5)()
             end)
 
             checkbox.label = checkbox:CreateFontString(nil, "OVERLAY", "GameFontNormalTiny")
@@ -163,33 +183,39 @@ function NercLib:AddLoggingModule(addon)
         searchBoxClearButton:SetScript("OnClick", function()
             searchBox:SetText("")
             loggingWindow.searchFilter = ""
-            UpdateLogText()
         end)
 
-        searchBox:SetScript("OnTextChanged", function(self)
-            print("search text changed")
-            local Utils = addon:GetModule("Utils")
+        searchBox:SetScript("OnTextChanged", function(searchBoxFrame)
+            loggingWindow.searchFilter = searchBoxFrame:GetText()
             Utils:DebounceChange(function()
-                loggingWindow.searchFilter = self:GetText()
-                print("search filter: " .. loggingWindow.searchFilter)
-                UpdateLogText()
+                UpdateWindowData()
             end, 0.5)()
         end)
+
+        Logging.loggingWindow = loggingWindow
     end
 
 
+    local function AddLogLine(messageInfo)
+        if not Logging.loggingWindow then return end
+        table.insert(Logging.lines, messageInfo)
+        Utils:DebounceChange(function()
+            UpdateWindowData()
+        end, 0.5)()
+    end
+
     local loggingWindowShown = false
     local function OpenLoggingWindow()
-        if not loggingWindow then
+        if not Logging.loggingWindow then
             CreateLoggingWindow()
         end
-        loggingWindow:Show()
+        Logging.loggingWindow:Show()
         loggingWindowShown = true
     end
 
     local function CloseLoggingWindow()
-        if loggingWindow then
-            loggingWindow:Hide()
+        if Logging.loggingWindow then
+            Logging.loggingWindow:Hide()
             loggingWindowShown = false
         end
     end
@@ -202,24 +228,7 @@ function NercLib:AddLoggingModule(addon)
         end
     end
 
-    local function AddLogLine(message, level)
-        if not loggingWindow then
-            CreateLoggingWindow()
-        end
-        if not level then
-            level = "DEBUG"
-        end
-        if not LOGGING_LEVEL_COLOR[level] then
-            level = "DEBUG"
-        end
-        table.insert(loggingWindow.lines, { message = message, level = level, timestamp = date("%H:%M:%S") })
-        C_Timer.After(0.1, function()
-            loggingWindow.scrollFrame.ScrollBar:ScrollToEnd()
-        end)
-        UpdateLogText()
-    end
 
-    local SavedVars = addon:GetModule("SavedVars")
 
     function Logging:EnableLogging()
         SavedVars:SetVar("logging", true)
@@ -227,24 +236,30 @@ function NercLib:AddLoggingModule(addon)
 
     function Logging:DisableLogging()
         SavedVars:SetVar("logging", false)
-        if loggingWindow then
-            loggingWindow:Hide()
+        if Logging.loggingWindow then
+            Logging.loggingWindow:Hide()
         end
     end
 
     ---@param message string
-    ---@param level LogLevel
+    ---@param level? LogLevel
     function Logging:Log(message, level)
         if not SavedVars:GetVar("logging") then
-            if loggingWindow then
-                loggingWindow:Hide()
+            if Logging.loggingWindow then
+                Logging.loggingWindow:Hide()
             end
             return
         end
-        AddLogLine(message, level)
+        if not level or not LOGGING_LEVEL_COLOR[level] then
+            level = "DEBUG"
+        end
+        AddLogLine({
+            message = message,
+            timestamp = date("%H:%M:%S"),
+            level = level
+        })
     end
 
-    local SlashCommand = addon:GetModule("SlashCommand")
     SlashCommand:AddSlashCommand("log", ToggleLoggingWindow, "Toggle logging window")
     local loggingEnabled = SavedVars:GetVar("logging")
     if loggingEnabled then

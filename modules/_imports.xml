@@ -12,4 +12,30 @@
     <Script file="utils.lua" />
     <Script file="localization.lua" />
     <Script file="logging.lua" />
+
+
+    <Frame name="NercLibLoggingListEntryTemplate" virtual="true" enableMouseMotion="true">
+        <Size x="1" y="20" />
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString parentKey="message" inherits="GameFontNormalSmall" justifyH="LEFT"
+                    wordwrap="false">
+                    <Anchors>
+                        <Anchor point="LEFT" />
+                        <Anchor point="RIGHT" />
+                    </Anchors>
+                    <Scripts>
+                        <OnEnter>
+                            local parent = self:GetParent()
+                            parent:LockHighlight()
+                        </OnEnter>
+                        <OnLeave>
+                            local parent = self:GetParent()
+                            parent:UnlockHighlight()
+                        </OnLeave>
+                    </Scripts>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
 </Ui>

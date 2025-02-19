@@ -12,7 +12,8 @@
     "explorer.sortOrder": "default",
     "Lua.completion.autoRequire": false,
     "Lua.diagnostics.disable": [
-        "no-unknown"
+        "no-unknown",
+        "redefined-local"
     ],
     "Lua.diagnostics.groupFileStatus": {
         "ambiguity": "Any",
@@ -74,20 +75,27 @@
         "BOTTOMLEFT",
         "BOTTOMRIGHT",
         "checkmark",
+        "clearbutton",
         "colorpicker",
         "Colorpicker",
         "debugstack",
         "FULLSCREEN",
         "getglobal",
+        "magnifyingglass",
         "Nerc",
         "RESETSAVEDVARS",
+        "roundhighlight",
         "strsplit",
         "TOPLEFT",
         "TOPRIGHT",
+        "wordwrap",
         "yxxx"
     ],
     "Lua.diagnostics.globals": [
         "StaticPopupDialogs",
-        "StaticPopup_Show"
+        "StaticPopup_Show",
+        "CreateDataProvider",
+        "CreateScrollBoxListLinearView",
+        "ScrollUtil"
     ],
 }
