@@ -52,34 +52,17 @@ function NercLib:AddLoggingModule(addon)
             return
         end
 
-
-        if #Logging.lines < 1000 then
-            ---@type LogMessageInfo[]
-            local filtered = {}
-            -- filter by search and selected log levels
-            for _, line in ipairs(Logging.lines) do
-                if not searchText or string.find(line.message, searchText) then
-                    if enabledFilters[line.level] then
-                        table.insert(filtered, line)
-                    end
+        ---@type LogMessageInfo[]
+        local filtered = {}
+        -- filter by search and selected log levels
+        for _, line in ipairs(Logging.lines) do
+            if not searchText or string.find(line.message, searchText) then
+                if enabledFilters[line.level] then
+                    table.insert(filtered, line)
                 end
             end
-            DP:InsertTable(filtered)
-            return
         end
-
-        -- create a list of functions that check for the search and log level filters
-        local funcList = {}
-        for _, line in ipairs(Logging.lines) do
-            table.insert(funcList, function()
-                if not searchText or string.find(line.message, searchText) then
-                    if enabledFilters[line.level] then
-                        DP:Insert(line)
-                    end
-                end
-            end)
-        end
-        Utils:BatchExecution(funcList)
+        DP:InsertTable(filtered)
     end
 
     local function CreateLoggingWindow()
