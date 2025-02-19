@@ -35,6 +35,9 @@ function NercLib:AddLoggingModule(addon)
 
     local function UpdateWindowData()
         if not Logging.loggingWindow then return end
+        local loggingEnabled = SavedVars:GetVar("logging")
+        if not loggingEnabled then return end
+
         local DP = Logging.loggingWindow.DataProvider
         local searchText = Logging.loggingWindow.searchFilter
         local enabledFilters = Logging.loggingWindow.enabledFilters
@@ -246,10 +249,12 @@ function NercLib:AddLoggingModule(addon)
 
     function Logging:EnableLogging()
         SavedVars:SetVar("logging", true)
+        SlashCommand:AddSlashCommand("log", function() Logging:ToggleLoggingWindow() end, "Toggle logging window")
     end
 
     function Logging:DisableLogging()
         SavedVars:SetVar("logging", false)
+        SlashCommand:RemoveSlashCommand("log")
         if Logging.loggingWindow then
             Logging.loggingWindow:Hide()
         end
@@ -258,12 +263,6 @@ function NercLib:AddLoggingModule(addon)
     ---@param message string
     ---@param level LogLevel?
     function Logging:Log(message, level)
-        if not SavedVars:GetVar("logging") then
-            if Logging.loggingWindow then
-                Logging.loggingWindow:Hide()
-            end
-            return
-        end
         if not level or not LOGGING_LEVEL_COLOR[level] then
             level = "DEBUG"
         end
@@ -274,10 +273,6 @@ function NercLib:AddLoggingModule(addon)
         })
     end
 
-    SlashCommand:AddSlashCommand("log", function() Logging:ToggleLoggingWindow() end, "Toggle logging window")
-    local loggingEnabled = SavedVars:GetVar("logging")
-    if loggingEnabled then
-        SlashCommand:AddSlashCommand("enableLogging", function() Logging:EnableLogging() end, "Enable logging")
-        SlashCommand:AddSlashCommand("disableLogging", function() Logging:DisableLogging() end, "Disable logging")
-    end
+    SlashCommand:AddSlashCommand("enableLogging", function() Logging:EnableLogging() end, "Enable logging")
+    SlashCommand:AddSlashCommand("disableLogging", function() Logging:DisableLogging() end, "Disable logging")
 end

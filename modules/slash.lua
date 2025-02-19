@@ -73,6 +73,13 @@ function NercLib:AddSlashCommandModule(addon)
         commandHelpStrings[command] = help
     end
 
+    ---@param command string
+    function SlashCommand:RemoveSlashCommand(command)
+        assert(type(command) == "string", "Command not provided")
+        commandList[command] = nil
+        commandHelpStrings[command] = nil
+    end
+
     local helpCommandEnabled = false
     function SlashCommand:EnableHelpCommand(command, description)
         assert(type(command) == "string", "Command not provided")
