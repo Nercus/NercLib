@@ -260,14 +260,23 @@ function NercLib:AddLoggingModule(addon)
         end
     end
 
+    local function UpdateSlashCommandAvailability()
+        local loggingEnabled = SavedVars:GetVar("logging")
+        if loggingEnabled then
+            SlashCommand:AddSlashCommand("log", function() Logging:ToggleLoggingWindow() end, "Toggle logging window")
+        else
+            SlashCommand:RemoveSlashCommand("log")
+        end
+    end
+
     function Logging:EnableLogging()
         SavedVars:SetVar("logging", true)
-        SlashCommand:AddSlashCommand("log", function() Logging:ToggleLoggingWindow() end, "Toggle logging window")
+        UpdateSlashCommandAvailability()
     end
 
     function Logging:DisableLogging()
         SavedVars:SetVar("logging", false)
-        SlashCommand:RemoveSlashCommand("log")
+        UpdateSlashCommandAvailability()
         if Logging.loggingWindow then
             Logging.loggingWindow:Hide()
         end
@@ -288,4 +297,5 @@ function NercLib:AddLoggingModule(addon)
 
     SlashCommand:AddSlashCommand("enableLogging", function() Logging:EnableLogging() end, "Enable logging")
     SlashCommand:AddSlashCommand("disableLogging", function() Logging:DisableLogging() end, "Disable logging")
+    UpdateSlashCommandAvailability()
 end
