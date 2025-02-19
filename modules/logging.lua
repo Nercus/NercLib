@@ -14,6 +14,7 @@ local TIMESTAMP_COLOR = CreateColor(0.5, 0.5, 0.5)
 
 ---@class LogEntryFrame : Frame
 ---@field message FontString
+---@field init boolean
 
 ---@class LogMessageInfo
 ---@field message string
@@ -139,13 +140,25 @@ function NercLib:AddLoggingModule(addon)
         ---@param frame LogEntryFrame
         ---@param messageInfo LogMessageInfo
         local function Initializer(frame, messageInfo)
+            -- one time initialization
+            if not frame.init then
+                frame:SetSize(1, 20)
+                frame:SetPoint("LEFT", 0, 0)
+                frame:SetPoint("RIGHT", 0, 0)
+                frame.message = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+                frame.message:SetAllPoints()
+                frame.message:SetJustifyH("LEFT")
+                frame.message:SetWordWrap(false)
+                frame.init = true
+            end
+
             local color = LOGGING_LEVEL_COLOR[messageInfo.level]
             local logMessage = string.format("[%s] %s", Text:WrapTextInColor(messageInfo.timestamp, TIMESTAMP_COLOR),
                 Text:WrapTextInColor(messageInfo.message, color))
             frame.message:SetText(logMessage)
         end
 
-        scrollView:SetElementInitializer("NercLibLoggingListEntryTemplate", Initializer)
+        scrollView:SetElementInitializer("Frame", Initializer)
         loggingWindow.DataProvider:InsertTable(Logging.lines)
         loggingWindow:Show()
 
