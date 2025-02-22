@@ -102,10 +102,10 @@ function NercLib:AddDebugModule(addon)
         local devModeEnabled = SavedVars:GetVar("devMode")
         if (devModeEnabled) then
             SavedVars:SetVar("devMode", false)
-            Logging:EnableLogging()
+            Logging:DisableLogging()
         else
             SavedVars:SetVar("devMode", true)
-            Logging:DisableLogging()
+            Logging:EnableLogging()
         end
         loadDevAddons(not devModeEnabled)
         ReloadUI()
