@@ -60,7 +60,7 @@ function NercLib:AddTestsModule(addon)
         ---@return {ToBe: fun(_, expected: any), ToBeTruthy: fun(), ToBeFalsy: fun(), ToBeType: fun(_, expected: type)}
         function test:Expect(value)
             ---@param expected any
-            local function ToBe(_, expected)
+            local function ToBe(expected)
                 -- check if the value is a table
                 if (type(value) == "table") then
                     ---@cast value table<any, any>
@@ -73,6 +73,7 @@ function NercLib:AddTestsModule(addon)
                     end
                     return
                 end
+                print(value, expected)
                 if (value ~= expected) then
                     error(Tests:FormatTestError(
                         string.format("Expected %s to be %s.", Tests:ToString(value), Tests:ToString(expected)),
