@@ -24,8 +24,6 @@ function NercLib:AddUtilsModule(addon)
         end
     end
 
-    -- TODO: adjust so onFinish is able to pass the return value of the last function
-
     ---Batch the execution of a list of functions with a delay between each execution
     ---@param funcList fun()[]
     ---@param onUpdate fun(progress: integer, maxProgress: integer)?
