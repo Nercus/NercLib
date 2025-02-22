@@ -38,19 +38,13 @@ function NercLib:AddLoggingModule(addon)
         if not Logging.loggingWindow then return end
         local loggingEnabled = SavedVars:GetVar("logging")
         if not loggingEnabled then return end
-
         local DP = Logging.loggingWindow.DataProvider
         local searchText = Logging.loggingWindow.searchFilter
         local enabledFilters = Logging.loggingWindow.enabledFilters
-        local lineCount = Logging.loggingWindow.lineCount
         local scrollBox = Logging.loggingWindow.scrollBox
-        local loadingIndicator = Logging.loggingWindow.loadingIndicator
-
         scrollBox:SetScrollPercentage(0)
-
         DP:Flush()
         if #Logging.lines == 0 then
-            lineCount:SetText(tostring(0))
             return
         end
 
@@ -64,15 +58,14 @@ function NercLib:AddLoggingModule(addon)
                 end
             end
         end
-        lineCount:SetText(tostring(#filtered))
         DP:InsertTable(filtered)
-        loadingIndicator:Hide()
     end
+    local debounceUpdateWindowData = Utils:DebounceChange(UpdateWindowData, 0.2)
 
     local function CreateLoggingWindow()
         local loggingWindow = CreateFrame("Frame", addon.name .. "LoggingWindow", UIParent, "DefaultPanelTemplate")
         tinsert(UISpecialFrames, loggingWindow:GetName());
-        loggingWindow:SetSize(500, 200)
+        loggingWindow:SetSize(500, 400)
         loggingWindow:SetMovable(true)
         loggingWindow:EnableMouse(true)
         loggingWindow:RegisterForDrag("LeftButton")
@@ -103,10 +96,71 @@ function NercLib:AddLoggingModule(addon)
             self:StopMovingOrSizing()
         end)
 
-        local loadingIndicator = CreateFrame("Frame", nil, loggingWindow, "SpinnerTemplate")
-        loadingIndicator:SetPoint("CENTER")
-        loadingIndicator:Hide()
-        loggingWindow.loadingIndicator = loadingIndicator
+
+        local Menu = addon:GetModule("Menu")
+        local filterButton = CreateFrame("DropdownButton", nil, loggingWindow, "WowStyle1ArrowDropdownTemplate")
+        filterButton:SetPoint("TOPRIGHT", loggingWindow, "TOPRIGHT", -5, -24)
+        loggingWindow.enabledFilters = {}
+        local MenuTemplate = {
+            {
+                type = "title",
+                label = "Filter by log level"
+            },
+        }
+
+        for level, _ in pairs(LOGGING_LEVEL_COLOR) do
+            loggingWindow.enabledFilters[level] = true
+            table.insert(MenuTemplate, {
+                type = "checkbox",
+                label = Text:WrapTextInColor(level, LOGGING_LEVEL_COLOR[level]),
+                isSelected = function() return loggingWindow.enabledFilters[level] end,
+                setSelected = function()
+                    loggingWindow.enabledFilters[level] = not loggingWindow.enabledFilters[level]; debounceUpdateWindowData()
+                end
+            })
+        end
+        local GeneratorFunction = Menu:GetGeneratorFunction(MenuTemplate)
+        filterButton:SetupMenu(GeneratorFunction);
+
+
+        loggingWindow.searchFilter = ""
+        local searchBox = CreateFrame("EditBox", nil, loggingWindow, "InputBoxInstructionsTemplate")
+        searchBox:SetSize(1, 20)
+        searchBox:SetAutoFocus(false)
+        searchBox:SetPoint("TOPLEFT", loggingWindow, "TOPLEFT", 15, -25)
+        searchBox:SetPoint("TOPRIGHT", filterButton, "TOPLEFT", -5, 0)
+        searchBox:SetTextInsets(16, 5, 0, 0)
+        searchBox.searchIcon = searchBox:CreateTexture(nil, "ARTWORK")
+        searchBox.searchIcon:SetAtlas("common-search-magnifyingglass")
+        searchBox.searchIcon:SetSize(10, 10)
+        searchBox.searchIcon:SetPoint("LEFT", searchBox, "LEFT", 1, -1)
+
+        local searchBoxClearButton = CreateFrame("Button", nil, searchBox)
+        searchBoxClearButton:SetSize(10, 10)
+        searchBoxClearButton:SetPoint("RIGHT", searchBox, "RIGHT", -3, 0)
+        searchBoxClearButton:SetNormalAtlas("common-search-clearbutton")
+        searchBoxClearButton:SetHighlightAtlas("common-roundhighlight")
+        searchBoxClearButton:SetScript("OnClick", function()
+            searchBox:SetText("")
+            loggingWindow.searchFilter = ""
+            debounceUpdateWindowData()
+        end)
+        searchBoxClearButton:Hide()
+        local lastText
+        searchBox:SetScript("OnTextChanged", function(searchBoxFrame)
+            local searchBoxText = searchBoxFrame:GetText()
+            if searchBoxText == "" then
+                searchBoxClearButton:Hide()
+            else
+                searchBoxClearButton:Show()
+            end
+            if searchBoxText == lastText then return end
+            lastText = searchBoxText
+            loggingWindow.searchFilter = searchBoxText
+            debounceUpdateWindowData()
+        end)
+
+
 
 
 
@@ -116,20 +170,15 @@ function NercLib:AddLoggingModule(addon)
         resizeButton:RegisterForDrag("LeftButton")
         resizeButton:Init(loggingWindow, 200, 200, GetScreenWidth(), GetScreenHeight())
 
-        local lineCount = loggingWindow:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        lineCount:SetPoint("BOTTOMRIGHT", resizeButton, "BOTTOMLEFT", -10, 0)
-        lineCount:SetText("0")
-        loggingWindow.lineCount = lineCount
-
 
         local scrollBox = CreateFrame("Frame", nil, loggingWindow, "WowScrollBoxList")
-        scrollBox:SetPoint("TOPLEFT", loggingWindow, "TOPLEFT", 10, -30)
-        scrollBox:SetPoint("BOTTOMRIGHT", loggingWindow, "BOTTOMRIGHT", -45, 20)
+        scrollBox:SetPoint("TOPLEFT", searchBox, "BOTTOMLEFT", -5, -5)
+        scrollBox:SetPoint("BOTTOMRIGHT", loggingWindow, "BOTTOMRIGHT", -5, 5)
         loggingWindow.scrollBox = scrollBox
 
         local scrollBar = CreateFrame("EventFrame", nil, loggingWindow, "MinimalScrollBar")
-        scrollBar:SetPoint("TOPRIGHT", loggingWindow, "TOPRIGHT", -10, -35)
-        scrollBar:SetPoint("BOTTOMRIGHT", loggingWindow, "BOTTOMRIGHT", -10, 10)
+        scrollBar:SetPoint("TOPRIGHT", filterButton, "BOTTOMRIGHT", -7, -5)
+        scrollBar:SetPoint("BOTTOMRIGHT", loggingWindow, "BOTTOMRIGHT", -5, 15)
 
 
         loggingWindow.DataProvider = CreateDataProvider()
@@ -143,7 +192,7 @@ function NercLib:AddLoggingModule(addon)
         ---@param messageInfo LogMessageInfo
         local function Initializer(frame, messageInfo)
             if not frame.init then
-                frame:SetSize(1, 20)
+                frame:SetSize(1, 14)
                 frame:SetPoint("LEFT", 0, 0)
                 frame:SetPoint("RIGHT", 0, 0)
                 frame.message = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -161,87 +210,10 @@ function NercLib:AddLoggingModule(addon)
             )
             frame.message:SetText(logMessage)
         end
-        scrollView:SetElementExtent(20)
+        scrollView:SetElementExtent(14)
         scrollView:SetElementInitializer("Frame", Initializer)
         loggingWindow.DataProvider:InsertTable(Logging.lines)
         loggingWindow:Show()
-
-        loggingWindow.enabledFilters = {}
-        -- logging filter buttons
-        local lastElement
-        for level, _ in pairs(LOGGING_LEVEL_COLOR) do
-            local checkbox = CreateFrame("CheckButton", nil, loggingWindow)
-            checkbox:SetNormalAtlas("checkbox-minimal")
-            checkbox:SetPushedAtlas("checkbox-minimal")
-            checkbox:SetCheckedTexture("checkmark-minimal")
-            checkbox:SetSize(20, 20)
-            checkbox:SetChecked(true)
-            checkbox:SetScript("OnClick", function(checkBoxFrame)
-                loggingWindow.enabledFilters[level] = checkBoxFrame:GetChecked()
-                if not loadingIndicator:IsShown() then
-                    loadingIndicator:Show()
-                end
-                Utils:DebounceChange(function()
-                    UpdateWindowData()
-                end, 0.5)()
-            end)
-
-            checkbox.label = checkbox:CreateFontString(nil, "OVERLAY", "GameFontNormalTiny")
-            checkbox.label:SetPoint("LEFT", checkbox, "RIGHT", 0, 0)
-            checkbox.label:SetText(level)
-            checkbox.label:SetWidth(40)
-            checkbox.label:SetJustifyH("LEFT")
-            loggingWindow.enabledFilters[level] = true
-
-            if lastElement then
-                checkbox:SetPoint("TOPLEFT", lastElement, "TOPRIGHT", 45, 0)
-            else
-                checkbox:SetPoint("BOTTOMLEFT", loggingWindow, "BOTTOMLEFT", 5, 2)
-            end
-            checkbox:Show()
-            lastElement = checkbox
-        end
-
-        loggingWindow.searchFilter = ""
-        local searchBox = CreateFrame("EditBox", nil, loggingWindow, "InputBoxInstructionsTemplate")
-        searchBox:SetSize(1, 18)
-        searchBox:SetAutoFocus(false)
-        searchBox:SetPoint("TOPLEFT", lastElement, "TOPRIGHT", 45, 0)
-        searchBox:SetPoint("RIGHT", loggingWindow.lineCount, "RIGHT", -35, 0)
-        searchBox:SetTextInsets(16, 5, 0, 0)
-        searchBox.searchIcon = searchBox:CreateTexture(nil, "ARTWORK")
-        searchBox.searchIcon:SetAtlas("common-search-magnifyingglass")
-        searchBox.searchIcon:SetSize(10, 10)
-        searchBox.searchIcon:SetPoint("LEFT", searchBox, "LEFT", 1, -1)
-
-        local searchBoxClearButton = CreateFrame("Button", nil, searchBox)
-        searchBoxClearButton:SetSize(10, 10)
-        searchBoxClearButton:SetPoint("RIGHT", searchBox, "RIGHT", -3, 0)
-        searchBoxClearButton:SetNormalAtlas("common-search-clearbutton")
-        searchBoxClearButton:SetHighlightAtlas("common-roundhighlight")
-        searchBoxClearButton:SetScript("OnClick", function()
-            searchBox:SetText("")
-            loggingWindow.searchFilter = ""
-            if not loadingIndicator:IsShown() then
-                loadingIndicator:Show()
-            end
-            Utils:DebounceChange(function()
-                UpdateWindowData()
-            end, 0.5)()
-        end)
-
-
-        -- FIXME: Triggers when resizing the frame
-        searchBox:SetScript("OnTextChanged", function(searchBoxFrame)
-            loggingWindow.searchFilter = searchBoxFrame:GetText()
-            if not loadingIndicator:IsShown() then
-                loadingIndicator:Show()
-            end
-            Utils:DebounceChange(function()
-                UpdateWindowData()
-            end, 0.5)()
-        end)
-
         Logging.loggingWindow = loggingWindow
     end
 
@@ -249,12 +221,7 @@ function NercLib:AddLoggingModule(addon)
     local function AddLogLine(messageInfo)
         table.insert(Logging.lines, messageInfo)
         if not Logging.loggingWindow then return end
-        if not Logging.loggingWindow.loadingIndicator:IsShown() then
-            Logging.loggingWindow.loadingIndicator:Show()
-        end
-        Utils:DebounceChange(function()
-            UpdateWindowData()
-        end, 0.5)()
+        debounceUpdateWindowData()
     end
 
     local loggingWindowShown = false
