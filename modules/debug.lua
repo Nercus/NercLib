@@ -216,15 +216,12 @@ function NercLib:AddDebugModule(addon)
         button3:SetPoint("LEFT", f, "CENTER", 5, 0)
         button4:SetPoint("LEFT", button3, "RIGHT", 10, 0)
 
-
-
         local testStatusbar = CreateFrame("StatusBar", nil, f)
         testStatusbar:SetSize(420, 27)
         testStatusbar:SetStatusBarTexture("delves-dashboard-bar-fill")
         testStatusbar:SetStatusBarDesaturated(true)
         testStatusbar:SetStatusBarColor(1, 1, 1)
         testStatusbar:SetPoint("BOTTOM", 0, 10)
-
 
         testStatusbar.border = testStatusbar:CreateTexture(nil, "BACKGROUND")
         testStatusbar.border:SetAtlas("delves-dashboard-bar-border")
@@ -253,11 +250,15 @@ function NercLib:AddDebugModule(addon)
 
         runTestsButton:SetScript("OnClick", function()
             local testIndex = 0
+            runTestsButton:Disable()
+            runTestsButton:DesaturateHierarchy(1)
             Tests:RunTests(function(success)
                 if not success then return end
                 testIndex = testIndex + 1
                 SetStatusbarValue(0, testCount, testIndex)
             end, function(errorList)
+                runTestsButton:Enable()
+                runTestsButton:DesaturateHierarchy(0)
                 local numErrors = #errorList
                 local allTestsPassed = numErrors == 0
                 testStatusbar.errorList = errorList
@@ -271,12 +272,15 @@ function NercLib:AddDebugModule(addon)
             end)
         end)
 
-        -- TODO: change that to a grid menu
-        local function BuildStatusbarTooltip(errorList)
+        -- FIXME: uncompleted tests are also shown as successful
+        local Menu = addon:GetModule("Menu")
+        local function BuildStatusBarMenu(errorList)
             if not errorList then
-                return
+                errorList = {}
             end
-            GameTooltip:SetText("Test results:")
+            ---@type AnyMenuEntry[]
+            local menuTemplate = {}
+
             local tests = Tests:GetTests()
             ---@type table<string, boolean>
             local erroredTests = {}
@@ -286,27 +290,29 @@ function NercLib:AddDebugModule(addon)
                 erroredTests[err[2]] = true
             end
 
-
             for _, test in ipairs(tests) do
                 local testStateIcon = CreateAtlasMarkup(tickAtlas, 16, 16)
                 if erroredTests[test.name] then
                     testStateIcon = CreateAtlasMarkup(crossAtlas, 16, 16)
                 end
-                GameTooltip:AddDoubleLine(test.name, testStateIcon, 1, 1, 1, 1, 1, 1)
+
+                table.insert(menuTemplate, {
+                    type = "button",
+                    label = string.format("%s %s", test.name, testStateIcon),
+                    onClick = function()
+                        test:Run()
+                    end
+                })
             end
+            return menuTemplate
         end
 
-
-
-        testStatusbar:SetScript("OnEnter", function()
-            GameTooltip:SetOwner(testStatusbar, "ANCHOR_TOP")
-            BuildStatusbarTooltip(testStatusbar.errorList)
-            GameTooltip:Show()
+        testStatusbar:SetScript("OnEnter", function(self)
+            Menu:GenerateMenu(self, BuildStatusBarMenu(testStatusbar.errorList),
+                { gridModeColumns = math.ceil(Tests:GetNumberOfTests() / 25) })
         end)
 
-        testStatusbar:SetScript("OnLeave", function()
-            GameTooltip:Hide()
-        end)
+
 
 
 
