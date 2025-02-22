@@ -155,6 +155,7 @@ function NercLib:AddDebugModule(addon)
 
     local tickAtlas = "UI-QuestTracker-Tracker-Check"
     local crossAtlas = "UI-QuestTracker-Objective-Fail"
+    local pausedAtlas = "CreditsScreen-Assets-Buttons-Pause"
 
     local function AddDevReload()
         local f = CreateFrame("frame", nil, UIParent, "DefaultPanelTemplate")
@@ -245,9 +246,10 @@ function NercLib:AddDebugModule(addon)
             testStatusbar.text:SetText(string.format("Tests completed: %d/%d", current, max))
         end
 
+
+        local states
         local testCount = Tests:GetNumberOfTests()
         SetStatusbarValue(0, testCount, 0)
-
         runTestsButton:SetScript("OnClick", function()
             local testIndex = 0
             runTestsButton:Disable()
@@ -256,46 +258,38 @@ function NercLib:AddDebugModule(addon)
                 if not success then return end
                 testIndex = testIndex + 1
                 SetStatusbarValue(0, testCount, testIndex)
-            end, function(errorList)
+            end, function(testsStates)
                 runTestsButton:Enable()
                 runTestsButton:DesaturateHierarchy(0)
-                local numErrors = #errorList
-                local allTestsPassed = numErrors == 0
-                testStatusbar.errorList = errorList
-                if allTestsPassed then
-                    testStatusbar.text:SetTextColor(0, 1, 0)
-                else
-                    testStatusbar.text:SetTextColor(1, 0, 0)
-                    return
+                states = testsStates
+                local numErrors = 0
+                for _, v in pairs(testsStates) do
+                    if not v then
+                        numErrors = numErrors + 1
+                    end
                 end
                 testStatusbar.text:SetText(string.format("Tests successful: %d / %d", testCount - numErrors, testCount))
             end)
         end)
 
-        -- FIXME: uncompleted tests are also shown as successful
         local Menu = addon:GetModule("Menu")
-        local function BuildStatusBarMenu(errorList)
-            if not errorList then
-                errorList = {}
-            end
+        ---@param testsStates table<string, boolean>
+        local function BuildStatusBarMenu(testsStates)
+            if not testsStates then return {} end
+
             ---@type AnyMenuEntry[]
             local menuTemplate = {}
-
             local tests = Tests:GetTests()
-            ---@type table<string, boolean>
-            local erroredTests = {}
-            for i = 1, #errorList do
-                ---@type string[]
-                local err = errorList[i]
-                erroredTests[err[2]] = true
-            end
 
             for _, test in ipairs(tests) do
-                local testStateIcon = CreateAtlasMarkup(tickAtlas, 16, 16)
-                if erroredTests[test.name] then
+                local testStateIcon
+                if testsStates[test.name] == nil then
+                    testStateIcon = CreateAtlasMarkup(pausedAtlas, 16, 16)
+                elseif testsStates[test.name] == true then
+                    testStateIcon = CreateAtlasMarkup(tickAtlas, 16, 16)
+                elseif testsStates[test.name] == false then
                     testStateIcon = CreateAtlasMarkup(crossAtlas, 16, 16)
                 end
-
                 table.insert(menuTemplate, {
                     type = "button",
                     label = string.format("%s %s", test.name, testStateIcon),
@@ -308,13 +302,9 @@ function NercLib:AddDebugModule(addon)
         end
 
         testStatusbar:SetScript("OnEnter", function(self)
-            Menu:GenerateMenu(self, BuildStatusBarMenu(testStatusbar.errorList),
+            Menu:GenerateMenu(self, BuildStatusBarMenu(states),
                 { gridModeColumns = math.ceil(Tests:GetNumberOfTests() / 25) })
         end)
-
-
-
-
 
         f:SetPropagateKeyboardInput(true)
         f:SetSize(totalWidth, 130)

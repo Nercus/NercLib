@@ -9,7 +9,6 @@ function NercLib:AddTestsModule(addon)
     local Tests = addon:GetModule("Tests")
     Tests.tests = {}
 
-
     function Tests:FormatTestError(message, stack)
         assert(type(message) == "string", "Message not provided")
         assert(type(stack) == "string", "Stack not provided")
@@ -47,6 +46,7 @@ function NercLib:AddTestsModule(addon)
     function Tests:Test(name, func)
         assert(type(name) == "string", "Test Name not provided")
         assert(type(func) == "function", "Test Function not provided")
+
         if (not self.tests) then
             self.tests = {}
         end
@@ -73,7 +73,6 @@ function NercLib:AddTestsModule(addon)
                     end
                     return
                 end
-                print(value, expected)
                 if (value ~= expected) then
                     error(Tests:FormatTestError(
                         string.format("Expected %s to be %s.", Tests:ToString(value), Tests:ToString(expected)),
@@ -113,7 +112,7 @@ function NercLib:AddTestsModule(addon)
         end
 
         ---@return boolean success
-        ---@return string msg
+        ---@return string result
         function test:Run()
             return pcall(func, self)
         end
@@ -130,12 +129,15 @@ function NercLib:AddTestsModule(addon)
         return self.tests
     end
 
+    ---Run all registered tests
+    ---@param onUpdate fun(success: boolean, result: string)
+    ---@param onFinish fun(testErrors: table<string, boolean>)
     function Tests:RunTests(onUpdate, onFinish)
         local tests = self.tests
         if not tests then return end
         local testCount = self:GetNumberOfTests()
-        ---@type {err: string, name: string}[]
-        local testErrors = {}
+        ---@type table<string, boolean>
+        local testState = {}
 
         ---@type FunctionContainer
         local ticker
@@ -143,22 +145,15 @@ function NercLib:AddTestsModule(addon)
         ticker = C_Timer.NewTicker(0.05, function()
             local test = tests[testIndex]
             if not test then return end
-            local success, msg = test:Run()
-            onUpdate(success)
-            if not success then
-                table.insert(testErrors, { msg, test.name })
+            local success, result = test:Run()
+            onUpdate(success, result)
+            testState[test.name] = success
+            if (not success) then
+                error(string.format("Test %s failed with error:\n%s", test.name, result))
             end
             if (testIndex >= testCount) then
                 ticker:Cancel()
-                onFinish(testErrors)
-                if (#testErrors > 0) then
-                    local errorIndex = 1
-                    C_Timer.NewTicker(0.5, function()
-                        local testError = testErrors[errorIndex]
-                        errorIndex = errorIndex + 1
-                        error(string.format("Test %s failed with error:\n%s", testError[2], testError[1]))
-                    end, #testErrors)
-                end
+                onFinish(testState)
             end
             testIndex = testIndex + 1
         end, testCount)
