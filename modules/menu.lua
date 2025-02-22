@@ -100,14 +100,22 @@ function NercLib:AddMenuModule(addon)
         end
     end
 
+    ---@class MenuOptions
+    ---@field gridModeColumns? number
+
     ---@param parentFrame Region
     ---@param menuTemplate AnyMenuEntry[]
-    function Menu:GenerateMenu(parentFrame, menuTemplate)
+    ---@param options MenuOptions
+    function Menu:GenerateMenu(parentFrame, menuTemplate, options)
         assert(type(parentFrame) == "table", "Parent frame not provided orr not a region")
         assert(type(menuTemplate) == "table", "Menu template not provided or not a table")
 
+        local gridModeColumns = options.gridModeColumns
         MenuUtil.CreateContextMenu(parentFrame, function(_, rootDescription)
             ---@cast rootDescription ElementMenuDescriptionProxy
+            if gridModeColumns then
+                rootDescription:SetGridMode(MenuConstants.VerticalGridDirection, gridModeColumns)
+            end
             for _, entry in ipairs(menuTemplate) do
                 GenerateMenuElement(rootDescription, entry)
             end
