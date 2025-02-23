@@ -65,12 +65,12 @@ function NercLib:AddLoggingModule(addon)
     local function CreateLoggingWindow()
         local loggingWindow = CreateFrame("Frame", addon.name .. "LoggingWindow", UIParent, "DefaultPanelTemplate")
         tinsert(UISpecialFrames, loggingWindow:GetName());
-        loggingWindow:SetSize(400, 100)
+        loggingWindow:SetSize(400, 200)
         loggingWindow:SetMovable(true)
         loggingWindow:EnableMouse(true)
         loggingWindow:RegisterForDrag("LeftButton")
         loggingWindow:SetResizable(true)
-        loggingWindow:SetResizeBounds(200, 100, GetScreenWidth(), GetScreenHeight())
+        loggingWindow:SetResizeBounds(200, 200, GetScreenWidth(), GetScreenHeight())
         loggingWindow:SetMovable(true)
         loggingWindow:SetScript("OnMouseDown", function(self)
             if not self.NineSlice.TopEdge:IsMouseOver() then
@@ -100,6 +100,7 @@ function NercLib:AddLoggingModule(addon)
         local Menu = addon:GetModule("Menu")
         local filterButton = CreateFrame("DropdownButton", nil, loggingWindow, "WowStyle1ArrowDropdownTemplate")
         filterButton:SetPoint("TOPRIGHT", loggingWindow, "TOPRIGHT", -5, -24)
+        ---@type table<string, boolean>
         loggingWindow.enabledFilters = {}
         local MenuTemplate = {
             {
@@ -146,8 +147,10 @@ function NercLib:AddLoggingModule(addon)
             debounceUpdateWindowData()
         end)
         searchBoxClearButton:Hide()
+        ---@type string
         local lastText
         searchBox:SetScript("OnTextChanged", function(searchBoxFrame)
+            ---@type string
             local searchBoxText = searchBoxFrame:GetText()
             if searchBoxText == "" then
                 searchBoxClearButton:Hide()

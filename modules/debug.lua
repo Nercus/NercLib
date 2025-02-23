@@ -156,7 +156,7 @@ function NercLib:AddDebugModule(addon)
     local tickAtlas = "UI-QuestTracker-Tracker-Check"
     local crossAtlas = "UI-QuestTracker-Objective-Fail"
     local pausedAtlas = "CreditsScreen-Assets-Buttons-Pause"
-    local customActionButton
+    local debugMenuTemplate = {}
 
 
     local function AddDevReload()
@@ -177,15 +177,19 @@ function NercLib:AddDebugModule(addon)
         end)
 
         local button1 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
-        button1:SetSize(130, 40)
+        button1:SetSize(150, 40)
         button1:SetFrameStrata("HIGH")
-        button1:SetText("Toggle Debug Menu")
-        customActionButton = button1
+        button1:SetText("Open Debug Menu")
+        button1:SetScript("OnClick", function(self)
+            local Menu = addon:GetModule("Menu")
+            if #debugMenuTemplate == 0 then return end
+            Menu:GenerateMenu(self, debugMenuTemplate)
+        end)
 
         totalWidth = totalWidth + button1:GetWidth() + 10
 
         local button2 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
-        button2:SetSize(130, 40)
+        button2:SetSize(150, 40)
         button2:SetFrameStrata("HIGH")
         button2:SetText("Reset Saved Vars")
         button2:SetScript("OnClick", ResetSavedVars)
@@ -193,7 +197,7 @@ function NercLib:AddDebugModule(addon)
         totalWidth = totalWidth + button2:GetWidth() + 10
 
         local button3 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
-        button3:SetSize(130, 40)
+        button3:SetSize(150, 40)
         button3:SetFrameStrata("HIGH")
         button3:SetText("Debug Addon")
         button3:SetScript("OnClick", function()
@@ -203,7 +207,7 @@ function NercLib:AddDebugModule(addon)
         totalWidth = totalWidth + button3:GetWidth() + 10
 
         local button4 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
-        button4:SetSize(130, 40)
+        button4:SetSize(150, 40)
         button4:SetFrameStrata("HIGH")
         button4:SetText("Exit Dev Mode")
         button4:SetScript("OnClick", setDevMode)
@@ -246,7 +250,7 @@ function NercLib:AddDebugModule(addon)
             testStatusbar.text:SetText(string.format("Tests completed: %d/%d", current, max))
         end
 
-
+        ---@type table<string, boolean>
         local states
         local testCount = Tests:GetNumberOfTests()
         SetStatusbarValue(0, testCount, 0)
@@ -283,6 +287,7 @@ function NercLib:AddDebugModule(addon)
             local tests = Tests:GetTests()
 
             for _, test in ipairs(tests) do
+                ---@type string
                 local testStateIcon
                 if testsStates[test.name] == nil then
                     testStateIcon = CreateAtlasMarkup(pausedAtlas, 16, 16)
@@ -345,13 +350,12 @@ function NercLib:AddDebugModule(addon)
         end
     end
 
-    ---@param menuTemplate AnyMenuEntry[]
-    function Debug:AddDebugCustomDebugActions(menuTemplate)
-        if not customActionButton then return end
-        customActionButton:SetScript("OnClick", function()
-            local Menu = addon:GetModule("Menu")
-            Menu:GenerateMenu(customActionButton, menuTemplate)
-        end)
+
+
+    ---@param menuTemplate AnyMenuEntry
+    function Debug:AddDebugCustomDebugAction(menuTemplate)
+        assert(type(menuTemplate) == "table", "Menu template not provided or not a table")
+        table.insert(menuTemplate, debugMenuTemplate)
     end
 
     Events:RegisterEvent("ADDON_LOADED", loadDevMode)
