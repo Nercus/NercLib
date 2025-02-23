@@ -156,6 +156,8 @@ function NercLib:AddDebugModule(addon)
     local tickAtlas = "UI-QuestTracker-Tracker-Check"
     local crossAtlas = "UI-QuestTracker-Objective-Fail"
     local pausedAtlas = "CreditsScreen-Assets-Buttons-Pause"
+    local customActionButton
+
 
     local function AddDevReload()
         local f = CreateFrame("frame", nil, UIParent, "DefaultPanelTemplate")
@@ -177,10 +179,8 @@ function NercLib:AddDebugModule(addon)
         local button1 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
         button1:SetSize(130, 40)
         button1:SetFrameStrata("HIGH")
-        button1:SetText("Run Placeholder")
-        button1:SetScript("OnClick", function()
-            print("placeholder")
-        end)
+        button1:SetText("Toggle Debug Menu")
+        customActionButton = button1
 
         totalWidth = totalWidth + button1:GetWidth() + 10
 
@@ -212,10 +212,10 @@ function NercLib:AddDebugModule(addon)
 
 
         --- SetPoint for the 4 buttons so they are centered horizontally in the frame
-        button2:SetPoint("RIGHT", f, "CENTER", -10, 0)
+        button2:SetPoint("RIGHT", f, "CENTER", -5, 0)
         button1:SetPoint("RIGHT", button2, "LEFT", -5, 0)
         button3:SetPoint("LEFT", f, "CENTER", 5, 0)
-        button4:SetPoint("LEFT", button3, "RIGHT", 10, 0)
+        button4:SetPoint("LEFT", button3, "RIGHT", 5, 0)
 
         local testStatusbar = CreateFrame("StatusBar", nil, f)
         testStatusbar:SetSize(420, 27)
@@ -274,6 +274,7 @@ function NercLib:AddDebugModule(addon)
 
         local Menu = addon:GetModule("Menu")
         ---@param testsStates table<string, boolean>
+        ---@return AnyMenuEntry[]
         local function BuildStatusBarMenu(testsStates)
             if not testsStates then return {} end
 
@@ -344,6 +345,14 @@ function NercLib:AddDebugModule(addon)
         end
     end
 
+    ---@param menuTemplate AnyMenuEntry[]
+    function Debug:AddDebugCustomDebugActions(menuTemplate)
+        if not customActionButton then return end
+        customActionButton:SetScript("OnClick", function()
+            local Menu = addon:GetModule("Menu")
+            Menu:GenerateMenu(customActionButton, menuTemplate)
+        end)
+    end
 
     Events:RegisterEvent("ADDON_LOADED", loadDevMode)
     --@end-do-not-package@
