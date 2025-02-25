@@ -14,6 +14,7 @@ function NercLib:AddSlashCommandModule(addon)
     local addedTriggers = 1
     function SlashCommand:SetSlashTrigger(trigger)
         assert(type(trigger) == "string", "Slash command trigger not provided")
+        assert(trigger:sub(1, 1) == "/", "Slash command trigger must start with /")
         local GLOBAL_NAME = string.format("SLASH_%s%d", addon.name:upper(), addedTriggers)
         ---@diagnostic disable-next-line: no-unknown
         _G[GLOBAL_NAME] = trigger
