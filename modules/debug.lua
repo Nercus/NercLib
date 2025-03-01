@@ -355,7 +355,7 @@ function NercLib:AddDebugModule(addon)
     ---@param menuTemplate AnyMenuEntry
     function Debug:AddDebugCustomDebugAction(menuTemplate)
         assert(type(menuTemplate) == "table", "Menu template not provided or not a table")
-        table.insert(menuTemplate, debugMenuTemplate)
+        table.insert(debugMenuTemplate, menuTemplate)
     end
 
     Events:RegisterEvent("ADDON_LOADED", loadDevMode)
