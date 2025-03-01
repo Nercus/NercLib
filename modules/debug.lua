@@ -149,7 +149,7 @@ function NercLib:AddDebugModule(addon)
 
 
     local function ResetSavedVars()
-        StaticPopup_Show("RESETSAVEDVARS_POPUP")
+        StaticPopup_Show(addon.name .. "RESETSAVEDVARS_POPUP")
     end
 
 
@@ -308,6 +308,7 @@ function NercLib:AddDebugModule(addon)
         end
 
         testStatusbar:SetScript("OnEnter", function(self)
+            if not states then return end
             Menu:GenerateMenu(self, BuildStatusBarMenu(states),
                 { gridModeColumns = math.ceil(Tests:GetNumberOfTests() / 25) })
         end)
