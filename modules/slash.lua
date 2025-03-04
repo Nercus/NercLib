@@ -57,6 +57,8 @@ function NercLib:AddSlashCommandModule(addon)
             local defaultAction = commandList["default"]
             if defaultAction then
                 pcall(defaultAction, unpack(args))
+            else
+                SlashCommand:PrintHelp()
             end
         end
     end
