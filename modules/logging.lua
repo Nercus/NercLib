@@ -292,5 +292,5 @@ function NercLib:AddLoggingModule(addon)
         else
             Logging:EnableLogging()
         end
-    end, "Toggle logging")
+    end, "Toggle the debug logging window")
 end
