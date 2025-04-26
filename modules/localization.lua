@@ -2,12 +2,13 @@
 local NercLib = _G.NercLib
 
 
+
 ---@param addon NercLibAddon
 function NercLib:AddLocalizationModule(addon)
     ---@class Localization
     local Localization = addon:GetModule("Localization")
     local Debug = addon:GetModule("Debug")
-    Localization.locale = GetLocale()
+    Localization.locale = GetLocale() --[[@as AceLocale.LocaleCode]]
     setmetatable(Localization, {
         __index = function(t, k)
             local v = tostring(k)
