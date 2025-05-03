@@ -1,3 +1,12 @@
+-- -------------------------------------------------------------------------- --
+-- Title: NercUtils
+-- Description: A collection of utility functions for WoW addons as an Ace3 module
+-- Version: 1.0.0 (05/2025)
+-- Author: Nerc
+-- License: MIT
+-- -------------------------------------------------------------------------- --
+
+
 local MAJOR, MINOR = "NercUtils", 1
 assert(LibStub, MAJOR .. " requires LibStub")
 
