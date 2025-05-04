@@ -194,15 +194,32 @@ function NercUtilsAddon:DebounceChange(func, delay) end
 ---@param onFinish fun()?
 function NercUtilsAddon:BatchExecution(funcList, onUpdate, onFinish) end
 
+---Get a specific module by name, if the module is not found, it will be created
 ---@generic T
 ---@param name `T`
 ---@return T
 function NercUtilsAddon:GetModule(name) end
 
+---Get the addon by name, if the addon is not found, it will be created
 ---@generic T
 ---@param addonName `T`
+---@param addonTable NercUtilsAddon
 ---@return T
-function NercUtilsAddon:GetAddon(addonName) end
+function NercUtilsAddon:GetAddon(addonName, addonTable) end
+
+---Register an event for a function to be called when the event is fired
+---@param event WoWEvent the event to register for
+---@param func function the function to call when the event is fired
+function NercUtilsAddon:RegisterEvent(event, func) end
+
+---Unregister an event for a given function
+---@param event WoWEvent the event to unregister for
+---@param func function the function to unregister for
+function NercUtilsAddon:UnregisterEventForFunction(event, func) end
+
+---Unregister an event for the addon
+---@param event WoWEvent the event to unregister for
+function NercUtilsAddon:UnregisterEvent(event) end
 
 -- -------------------------------------------------------------------------- --
 --                                   Options                                  --
