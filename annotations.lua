@@ -102,20 +102,20 @@ function NercUtilsAddon:GetOptionsForCategory(category) end
 function NercUtilsAddon:GetOptionElementData(category, label) end
 
 ---Create a new test. Example usage:
--- Tests:Test("Test addition", function(self)
---     local test = 1 + 1
---     self:Expect(test):ToEqual(2)
+-- Addon:Test("Test addition", function(test)
+--     local sum = 1 + 1
+--     test:Expect(sum):ToEqual(2)
 -- end)
 
--- Tests:Test("Test frame showable", function(self)
+-- Addon:Test("Test frame showable", function(test)
 --    MyFrame:Show()
---    self:Expect(MyFrame:IsShown()):ToBeTruthy()
+--    test:Expect(MyFrame:IsShown()):ToBeTruthy()
 -- end)
 --
--- Tests:Test("Test is value saved persistently", function(self)
+-- Addon:Test("Test is value saved persistently", function(test)
 --    local sum = 1 + 1
---    self:SetVar("sum", sum)
---    self:Expect(self:GetVar("sum")):ToEqual(2)
+--    test:SetVar("sum", sum)
+--    test:Expect(Addon:GetVar("sum")):ToEqual(2)
 -- end)
 ---@param name string
 ---@param func fun(test: Test)

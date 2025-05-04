@@ -21,7 +21,7 @@ _G.NercLib = NercLib
 --                                 Persistence                                --
 -- -------------------------------------------------------------------------- --
 function NercUtils:InitDB()
-  assert(self.db, "Database already initialized")
+  if self.db then return end
   local addon = self.name
   self.defaults = self.defaults or {}
   self.db = _G[addon .. "DB"]
@@ -75,6 +75,9 @@ function NercUtils:SetDefault(...)
 end
 
 function NercUtils:SetVar(...)
+  if not self.db then
+    self:InitDB()
+  end
   -- move all arguments into a table
   local arg = { ... }
   local value = arg[#arg] -- last argument is the value
@@ -101,6 +104,9 @@ function NercUtils:SetVar(...)
 end
 
 function NercUtils:GetVar(...)
+  if not self.db then
+    self:InitDB()
+  end
   -- move all arguments into a table
   local arg = { ... }
 
@@ -119,6 +125,9 @@ function NercUtils:GetVar(...)
 end
 
 function NercUtils:DeleteVar(...)
+  if not self.db then
+    self:InitDB()
+  end
   -- move all arguments into a table
   local arg = { ... }
   local dbTable = self.db
@@ -272,7 +281,7 @@ local function AddDebugMenu(addon)
 
   local f = CreateFrame("Frame", nil, UIParent, "NercUtilsDebugMenuFrameTemplate")
   f.debugMenuButton:SetScript("OnClick", function(self)
-    if #addon.debugMenuTemplate == 0 then return end
+    if not addon.debugMenuTemplate or #addon.debugMenuTemplate == 0 then return end
     addon:GenerateMenu(self, addon.debugMenuTemplate)
   end)
   f.resetVarsButton:SetScript("OnClick", function()
@@ -284,10 +293,12 @@ local function AddDebugMenu(addon)
   f.exitDevButton:SetScript("OnClick", setDevMode)
 
   local testStates
+  -- FIXME: test statusbar not updating properly
   local testCount = addon:GetNumberOfTests()
   f.testStatusbar:SetStatusbarValue(0, testCount, 0)
   local runTestsButton = f.testStatusbar.runTestsButton
   runTestsButton:SetScript("OnClick", function()
+    if not testCount or testCount == 0 then return end
     local testIndex = 0
     runTestsButton:Disable()
     runTestsButton:DesaturateHierarchy(1)
@@ -695,6 +706,7 @@ end
 --                                    Print                                   --
 -- -------------------------------------------------------------------------- --
 
+local defaultColor = ConsoleGetColorFromType(1)
 function NercUtils:Print(...)
   local str = select(1, ...)
   local args = select(2, ...)
@@ -702,6 +714,7 @@ function NercUtils:Print(...)
     str = string.format(str, args) ---@type string
   end
   assert(type(str) == "string", "Print must be passed a string")
+  local prefix = self:WrapTextInColor(self.name .. ": ", defaultColor)
   ---@diagnostic disable-next-line: undefined-global, no-unknown
   DEFAULT_CHAT_FRAME:AddMessage(prefix .. str)
 end
@@ -900,7 +913,9 @@ end
 function NercUtils:RegisterEvent(event, func)
   assert(event, "Event must be provided")
   assert(func, "Function must be provided")
-
+  if not self.registeredEvents then
+    self.registeredEvents = {}
+  end
   if not self.registeredEvents[event] then
     self.registeredEvents[event] = {}
   end
@@ -922,6 +937,12 @@ end
 function NercUtils:UnregisterEventForFunction(event, func)
   assert(event, "Event must be provided")
   assert(func, "Function must be provided")
+  if not self.registeredEvents then
+    self.registeredEvents = {}
+  end
+  if not self.registeredEvents[event] then
+    self.registeredEvents[event] = {}
+  end
   if self.registeredEvents[event] then
     for i, f in ipairs(self.registeredEvents[event]) do
       if f == func then
@@ -938,6 +959,9 @@ end
 
 function NercUtils:UnregisterEvent(event)
   assert(event, "Event must be provided")
+  if not self.registeredEvents then
+    self.registeredEvents = {}
+  end
   self.registeredEvents[event] = nil
   self.addonEventFrame:UnregisterEvent(event)
 end
@@ -962,8 +986,11 @@ function NercUtils:GetModule(name)
 end
 
 local mixins = {
-  "GetModule",
   "InitDB",
+  "RegisterEvent",
+  "UnregisterEventForFunction",
+  "UnregisterEvent",
+  "GetModule",
   "GetDefault",
   "SetDefault",
   "SetVar",
