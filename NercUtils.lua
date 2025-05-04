@@ -13,7 +13,9 @@ assert(LibStub, MAJOR .. " requires LibStub")
 local NercUtils = LibStub:NewLibrary(MAJOR, MINOR)
 if not NercUtils then return end
 
-NercUtils.embeds = NercUtils.embeds or {}
+
+_G.NercLib = NercLib
+
 
 -- -------------------------------------------------------------------------- --
 --                                 Persistence                                --
@@ -744,7 +746,7 @@ function NercUtils:SetSlashTrigger(trigger, triggerIndex)
     assert(type(trigger) == "string", "Slash command trigger not provided")
     assert(trigger:sub(1, 1) == "/", "Slash command trigger must start with /")
 
-    local SLASH_PREFIX = string.format("SLASH_%s", self)
+    local SLASH_PREFIX = string.format("SLASH_%s", self.name)
     local GLOBAL_NAME = string.format("%s%d", SLASH_PREFIX, triggerIndex)
     ---@diagnostic disable-next-line: no-unknown
     _G[GLOBAL_NAME] = trigger
@@ -894,10 +896,28 @@ end
 
 
 
+
 -- -------------------------------------------------------------------------- --
---                                  Embed                                     --
+--                                  Core                                      --
 -- -------------------------------------------------------------------------- --
+
+function NercUtils:GetModule(name)
+    assert(self.modules, "Modules not initialized")
+    assert(name, "Module name not provided")
+
+    if (not self.modules or not self.modules[name]) then
+        local m = {}
+        if (not self.modules) then
+            self.modules = {}
+        end
+        self.modules[name] = m
+        return m
+    end
+    return self.modules[name]
+end
+
 local mixins = {
+    "GetModule",
     "InitDB",
     "GetDefault",
     "SetDefault",
@@ -930,17 +950,30 @@ local mixins = {
     "BatchExecution",
 }
 
-function NercUtils:Embed(target)
-    for _, v in pairs(mixins) do
-        target[v] = self[v]
+---@type table<string, NercUtilsAddon>
+local addons = {}
+
+---@param addonName string
+---@param addonTable NercUtilsAddon
+---@return NercUtilsAddon
+function NercUtils:GetAddon(addonName, addonTable)
+    if (addons[addonName]) then
+        return addons[addonName]
     end
-    self.embeds[target] = true
+
+    addonTable.name = addonName
+    addonTable.modules = {}
+
+    for _, v in pairs(mixins) do
+        addonTable[v] = self[v]
+    end
 
     -- Set up localization
-    target.locale = GetLocale() --[[@as AceLocale.LocaleCode]]
-    target.L = AddLocalalization()
+    addonTable.locale = GetLocale() --[[@as AceLocale.LocaleCode]]
+    addonTable.L = AddLocalalization()
 
-    AddDebugMenu(target)
-    -- Set up debug mode
-    return target
+    AddDebugMenu(addonTable)
+
+    addons[addonName] = addonTable
+    return addonTable
 end
