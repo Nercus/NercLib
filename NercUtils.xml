@@ -1,115 +1,115 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
-  <Script file="NercUtils.lua" />
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+    <Script file="NercUtils.lua" />
 
 
-  <Frame inherits="DefaultPanelTemplate" virtual="true" frameStrata="HIGH" frameLevel="100"
-    propagateKeyboardInput="true" name="NercUtilsDebugMenuFrameTemplate" hidden="true">
-    <Size x="640" y="130" />
-    <Anchors>
-      <Anchor point="BOTTOM" y="5" />
-    </Anchors>
-    <Layers>
-      <Layer level="ARTWORK">
-        <FontString name="$parentTitle" inherits="GameFontNormal"
-          text="Press 1 to reload UI">
-          <Anchors>
-            <Anchor point="TOP" y="-30" />
-          </Anchors>
-        </FontString>
-      </Layer>
-    </Layers>
-    <Frames>
-      <Button inherits="SharedButtonLargeTemplate" frameStrata="HIGH" text="Open Debug Menu"
-        parentKey="debugMenuButton">
-        <Size x="150" y="40" />
+    <Frame inherits="DefaultPanelTemplate" virtual="true" frameStrata="HIGH" frameLevel="100"
+        propagateKeyboardInput="true" name="NercUtilsDebugMenuFrameTemplate" hidden="true">
+        <Size x="640" y="130" />
         <Anchors>
-          <Anchor point="LEFT" x="15" />
+            <Anchor point="BOTTOM" y="5" />
         </Anchors>
-      </Button>
-      <Button inherits="SharedButtonLargeTemplate" frameStrata="HIGH" text="Reset Saved Vars"
-        parentKey="resetVarsButton">
-        <Size x="150" y="40" />
-        <Anchors>
-          <Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.debugMenuButton"
-            x="5"
-            y="0" />
-        </Anchors>
-      </Button>
-      <Button inherits="SharedButtonLargeTemplate" frameStrata="HIGH" text="Debug Addon"
-        parentKey="debugAddonButton">
-        <Size x="150" y="40" />
-        <Anchors>
-          <Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.resetVarsButton"
-            x="5"
-            y="0" />
-        </Anchors>
-      </Button>
-      <Button inherits="SharedButtonLargeTemplate" frameStrata="HIGH" text="Exit Dev Mode"
-        parentKey="exitDevButton">
-        <Size x="150" y="40" />
-        <Anchors>
-          <Anchor point="LEFT" relativePoint="RIGHT"
-            relativeKey="$parent.debugAddonButton" x="5"
-            y="0" />
-        </Anchors>
-      </Button>
-
-      <StatusBar parentKey="testStatusbar">
-        <Size x="420" y="27" />
-        <BarTexture atlas="delves-dashboard-bar-fill" desaturated="true" />
         <Layers>
-          <Layer level="BORDER">
-            <Texture atlas="delves-dashboard-bar-border">
-              <Anchors>
-                <Anchor point="TOPLEFT" x="-1" y="1" />
-                <Anchor point="BOTTOMRIGHT" x="1" y="-1" />
-              </Anchors>
-            </Texture>
-          </Layer>
-          <Layer level="OVERLAY">
-            <FontString parentKey="text" inherits="GameFontNormal" text="Test StatusBar">
-              <Anchors>
-                <Anchor point="CENTER" y="1" />
-              </Anchors>
-            </FontString>
-          </Layer>
+            <Layer level="ARTWORK">
+                <FontString name="$parentTitle" inherits="GameFontNormal"
+                    text="Press 1 to reload UI">
+                    <Anchors>
+                        <Anchor point="TOP" y="-30" />
+                    </Anchors>
+                </FontString>
+            </Layer>
         </Layers>
-        <Anchors>
-          <Anchor point="BOTTOM" y="10" />
-        </Anchors>
-
         <Frames>
-          <Button parentKey="runTestsButton" frameStrata="HIGH">
-            <Size x="30" y="30" />
-            <NormalTexture atlas="CreditsScreen-Assets-Buttons-Play" />
-            <Anchors>
-              <Anchor point="LEFT" relativePoint="RIGHT"
-                relativeKey="$parent.testStatusbar"
-                x="5" y="0" />
-            </Anchors>
-          </Button>
+            <Button inherits="SharedButtonLargeTemplate" frameStrata="HIGH" text="Open Debug Menu"
+                parentKey="debugMenuButton">
+                <Size x="150" y="40" />
+                <Anchors>
+                    <Anchor point="LEFT" x="15" />
+                </Anchors>
+            </Button>
+            <Button inherits="SharedButtonLargeTemplate" frameStrata="HIGH" text="Reset Saved Vars"
+                parentKey="resetVarsButton">
+                <Size x="150" y="40" />
+                <Anchors>
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.debugMenuButton"
+                        x="5"
+                        y="0" />
+                </Anchors>
+            </Button>
+            <Button inherits="SharedButtonLargeTemplate" frameStrata="HIGH" text="Debug Addon"
+                parentKey="debugAddonButton">
+                <Size x="150" y="40" />
+                <Anchors>
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.resetVarsButton"
+                        x="5"
+                        y="0" />
+                </Anchors>
+            </Button>
+            <Button inherits="SharedButtonLargeTemplate" frameStrata="HIGH" text="Exit Dev Mode"
+                parentKey="exitDevButton">
+                <Size x="150" y="40" />
+                <Anchors>
+                    <Anchor point="LEFT" relativePoint="RIGHT"
+                        relativeKey="$parent.debugAddonButton" x="5"
+                        y="0" />
+                </Anchors>
+            </Button>
+
+            <StatusBar parentKey="testStatusbar">
+                <Size x="420" y="27" />
+                <BarTexture atlas="delves-dashboard-bar-fill" desaturated="true" />
+                <Layers>
+                    <Layer level="BORDER">
+                        <Texture atlas="delves-dashboard-bar-border">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" x="-1" y="1" />
+                                <Anchor point="BOTTOMRIGHT" x="1" y="-1" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                    <Layer level="OVERLAY">
+                        <FontString parentKey="text" inherits="GameFontNormal" text="Test StatusBar">
+                            <Anchors>
+                                <Anchor point="CENTER" y="1" />
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+                <Anchors>
+                    <Anchor point="BOTTOM" y="10" />
+                </Anchors>
+
+                <Frames>
+                    <Button parentKey="runTestsButton" frameStrata="HIGH">
+                        <Size x="30" y="30" />
+                        <NormalTexture atlas="CreditsScreen-Assets-Buttons-Play" />
+                        <Anchors>
+                            <Anchor point="LEFT" relativePoint="RIGHT"
+                                relativeKey="$parent.testStatusbar"
+                                x="5" y="0" />
+                        </Anchors>
+                    </Button>
+                </Frames>
+                <Scripts>
+                    <OnLoad>
+                        self.SetStatusbarValue = function(self, min, max, value)
+                            self:SetMinMaxValues(min, max)
+                            self:SetValue(value)
+                            self.text:SetText(string.format("Tests completed: %d/%d", value, max))
+                        end
+                    </OnLoad>
+                </Scripts>
+            </StatusBar>
         </Frames>
         <Scripts>
-          <OnLoad>
-              self.SetStatusbarValue = function(self, min, max, value)
-                self:SetMinMaxValues(min, max)
-                self:SetValue(value)
-                self.text:SetText(string.format("Tests completed: %d/%d", value, max))
-              end
-          </OnLoad>
+            <OnLoad>
+                self:RegisterEvent("ADDON_LOADED")
+                self:RegisterEvent("PLAYER_LOGIN")
+            </OnLoad>
+            <OnKeyDown>
+                if (key == "1") then ReloadUI() end
+            </OnKeyDown>
         </Scripts>
-      </StatusBar>
-    </Frames>
-    <Scripts>
-      <OnLoad>
-          self:RegisterEvent("ADDON_LOADED")
-          self:RegisterEvent("PLAYER_LOGIN")
-      </OnLoad>
-      <OnKeyDown>
-          if (key == "1") then ReloadUI() end
-      </OnKeyDown>
-    </Scripts>
-  </Frame>
+    </Frame>
 </Ui>
