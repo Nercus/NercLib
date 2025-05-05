@@ -292,34 +292,6 @@ local function AddDebugMenu(addon)
   end)
   f.exitDevButton:SetScript("OnClick", setDevMode)
 
-  local testStates
-  -- FIXME: test statusbar not updating properly
-  local testCount = addon:GetNumberOfTests()
-  f.testStatusbar:SetStatusbarValue(0, testCount, 0)
-  local runTestsButton = f.testStatusbar.runTestsButton
-  runTestsButton:SetScript("OnClick", function()
-    if not testCount or testCount == 0 then return end
-    local testIndex = 0
-    runTestsButton:Disable()
-    runTestsButton:DesaturateHierarchy(1)
-    addon:RunTests(function(success)
-      if not success then return end
-      testIndex = testIndex + 1
-      f.testStatusbar:SetStatusBarValue(0, testCount, testIndex)
-    end, function(states)
-      runTestsButton:Enable()
-      runTestsButton:DesaturateHierarchy(0)
-      testStates = states
-      local numErrors = 0
-      for _, v in pairs(states) do
-        if not v then
-          numErrors = numErrors + 1
-        end
-      end
-      f.testStatusbar.text:SetText(string.format("Tests successful: %d / %d", testCount - numErrors, testCount))
-    end)
-  end)
-
 
   local function BuildStatusBarMenu(testsStates)
     if not testsStates then return {} end
@@ -349,6 +321,39 @@ local function AddDebugMenu(addon)
     return menuTemplate
   end
 
+
+  local testStates
+  local function UpdateTestStatusbar()
+    local testCount = addon:GetNumberOfTests()
+    f.testStatusbar:SetStatusbarValue(0, testCount, 0)
+    local runTestsButton = f.testStatusbar.runTestsButton
+    runTestsButton:SetScript("OnClick", function()
+      if not testCount or testCount == 0 then return end
+      local testIndex = 0
+      runTestsButton:Disable()
+      runTestsButton:DesaturateHierarchy(1)
+      addon:RunTests(function(success)
+        if not success then return end
+        testIndex = testIndex + 1
+        f.testStatusbar:SetStatusbarValue(0, testCount, testIndex)
+      end, function(states)
+        runTestsButton:Enable()
+        runTestsButton:DesaturateHierarchy(0)
+        testStates = states
+        local numErrors = 0
+        for _, v in pairs(states) do
+          if not v then
+            numErrors = numErrors + 1
+          end
+        end
+        f.testStatusbar.text:SetText(string.format("Tests successful: %d / %d", testCount - numErrors, testCount))
+      end)
+    end)
+  end
+
+
+
+
   f.testStatusbar:SetScript("OnEnter", function(self)
     if not testStates then return end
     addon:GenerateMenu(self, BuildStatusBarMenu(testStates),
@@ -361,6 +366,7 @@ local function AddDebugMenu(addon)
     if (devModeEnabled) then
       addon:Print("Dev mode enabled")
       f:Show()
+      UpdateTestStatusbar()
       C_Timer.After(1, function()
         LDBIcon:Show("BugSack")
         LDBIcon:Show(addon.name)
@@ -759,7 +765,7 @@ function NercUtils:SetSlashTrigger(trigger, triggerIndex)
   assert(type(trigger) == "string", "Slash command trigger not provided")
   assert(trigger:sub(1, 1) == "/", "Slash command trigger must start with /")
 
-  local SLASH_PREFIX = string.format("SLASH_%s", self.name)
+  local SLASH_PREFIX = string.format("SLASH_%s", self.name:upper())
   local GLOBAL_NAME = string.format("%s%d", SLASH_PREFIX, triggerIndex)
   ---@diagnostic disable-next-line: no-unknown
   _G[GLOBAL_NAME] = trigger
