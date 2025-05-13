@@ -418,9 +418,6 @@ end
 ---@param entry AnyMenuEntry
 ---@return ElementMenuDescriptionProxy
 local function GenerateMenuElement(rootDescription, entry)
-    if entry.tooltip then
-        rootDescription:SetTooltip(entry.tooltip)
-    end
     if entry.type == "title" then
         return rootDescription:CreateTitle(entry.label)
     elseif entry.type == "button" then
