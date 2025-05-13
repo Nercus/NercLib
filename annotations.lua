@@ -311,6 +311,7 @@ function NercUtilsAddon:UnregisterEvent(event) end
 ---@alias MenuEntryType "button" | "title" | "checkbox" | "radio" | "divider" | "spacer" | "template" | "submenu"
 
 ---@class MenuEntry
+---@field tooltip? fun(tooltip: GameTooltip, elementDescription: ElementMenuDescriptionProxy)
 ---@field type MenuEntryType
 
 ---@class MenuButtonEntry : MenuEntry
