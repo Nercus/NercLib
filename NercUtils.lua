@@ -244,7 +244,7 @@ local function AddDebugMenu(addon)
             addon:SetVar("devMode", true)
         end
         loadDevAddons(not devModeEnabled)
-        ReloadUI()
+        C_UI.Reload()
     end
     addon:AddSlashCommand("dev", setDevMode, "Toggle dev mode")
 
@@ -272,14 +272,90 @@ local function AddDebugMenu(addon)
                 DBToKeep[key] = DB[key]
             end
             DB = DBToKeep
-            ReloadUI()
+            C_UI.Reload()
         end,
         timeout = 0,
         whileDead = true,
         hideOnEscape = true,
     }
 
-    local f = CreateFrame("Frame", nil, UIParent, "NercUtilsDebugMenuFrameTemplate")
+    local f = CreateFrame("Frame", nil, UIParent, "DefaultPanelTemplate")
+    local f = CreateFrame("Frame", "NercUtilsDebugMenuFrame", UIParent, "DefaultPanelTemplate")
+    f:SetSize(640, 130)
+    f:SetFrameStrata("HIGH")
+    f:SetFrameLevel(100)
+    f:SetPropagateKeyboardInput(true)
+    f:Hide()
+    f:SetPoint("BOTTOM", 0, 5)
+
+    local title = f:CreateFontString("$parentTitle", "ARTWORK", "GameFontNormal")
+    title:SetPoint("TOP", 0, -30)
+    title:SetText("Press 1 to reload UI")
+
+    local button1 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
+    button1:SetSize(150, 40)
+    button1:SetPoint("LEFT", 15, 0)
+    button1:SetText("Open Debug Menu")
+    f.debugMenuButton = button1
+
+    local button2 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
+    button2:SetSize(150, 40)
+    button2:SetPoint("LEFT", button1, "RIGHT", 5, 0)
+    button2:SetText("Reset Saved Vars")
+    f.resetVarsButton = button2
+
+    local button3 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
+    button3:SetSize(150, 40)
+    button3:SetPoint("LEFT", button2, "RIGHT", 5, 0)
+    button3:SetText("Debug Addon")
+    f.debugAddonButton = button3
+
+    local button4 = CreateFrame("Button", nil, f, "SharedButtonLargeTemplate")
+    button4:SetSize(150, 40)
+    button4:SetPoint("LEFT", button3, "RIGHT", 5, 0)
+    button4:SetText("Exit Dev Mode")
+    f.exitDevButton = button4
+
+    local statusbar = CreateFrame("StatusBar", nil, f)
+    statusbar:SetSize(420, 27)
+    statusbar:SetPoint("BOTTOM", 0, 10)
+    statusbar:SetStatusBarTexture("Interface/AddOns/YourAddon/delves-dashboard-bar-fill") -- Replace with actual path or atlas
+    statusbar:SetMinMaxValues(0, 100)
+    statusbar:SetValue(0)
+    f.testStatusbar = statusbar
+
+    local border = statusbar:CreateTexture(nil, "BORDER")
+    border:SetAtlas("delves-dashboard-bar-border")
+    border:SetPoint("TOPLEFT", -1, 1)
+    border:SetPoint("BOTTOMRIGHT", 1, -1)
+
+    local sbText = statusbar:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    sbText:SetPoint("CENTER", 0, 1)
+    sbText:SetText("Test StatusBar")
+    statusbar.text = sbText
+
+    function statusbar:SetStatusbarValue(min, max, value)
+        self:SetMinMaxValues(min, max)
+        self:SetValue(value)
+        self.text:SetText(string.format("Tests completed: %d/%d", value, max))
+    end
+
+    local runTestsButton = CreateFrame("Button", nil, statusbar)
+    runTestsButton:SetSize(30, 30)
+    runTestsButton:SetPoint("LEFT", statusbar, "RIGHT", 5, 0)
+    runTestsButton:SetNormalTexture("Interface/AddOns/YourAddon/CreditsScreen-Assets-Buttons-Play") -- Replace with actual path or atlas
+    statusbar.runTestsButton = runTestsButton
+
+    f:RegisterEvent("ADDON_LOADED")
+    f:RegisterEvent("PLAYER_LOGIN")
+
+    f:SetScript("OnKeyDown", function(_, key)
+        if key == "1" then
+            C_UI.Reload()
+        end
+    end)
+
+
     f.debugMenuButton:SetScript("OnClick", function(self)
         if not addon.debugMenuTemplate or #addon.debugMenuTemplate == 0 then return end
         addon:GenerateMenu(self, addon.debugMenuTemplate)
