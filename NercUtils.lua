@@ -511,8 +511,10 @@ local function GenerateMenuElement(rootDescription, entry)
         templateEl:AddInitializer(entry.initializer)
         return templateEl
     elseif entry.type == "submenu" then
+        assert(entry.entry.type == "button" or entry.entry.type == "checkbox" or entry.entry.type == "radio" or
+            entry.entry.type == "template", "Submenu entry must be a button, checkbox, radio or template")
         ---@diagnostic disable-next-line: missing-parameter for submenus the second and third parameter are not used
-        local subMenuButton = rootDescription:CreateButton(entry.label)
+        local subMenuButton = GenerateMenuElement(rootDescription, entry.entry)
         ---@type AnyMenuEntry[]
         local entries = type(entry.entries) == "function" and entry.entries() or
             entry.entries --[[@as AnyMenuEntry[]]

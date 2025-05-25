@@ -349,7 +349,7 @@ function NercUtilsAddon:UnregisterEvent(event) end
 
 ---@class MenuSubmenuEntry : MenuEntry
 ---@field type "submenu"
----@field label string
+---@field entry AnyMenuEntry
 ---@field entries AnyMenuEntry[] | fun(): AnyMenuEntry[]
 
 
