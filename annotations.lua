@@ -185,8 +185,9 @@ function NercUtilsAddon:EnableHelpCommand() end
 ---Debounce a function call to prevent it from being called too frequently
 ---@param func fun()
 ---@param delay number
+---@param onChange? fun() a function to call when the debounced function is called
 ---@return function
-function NercUtilsAddon:DebounceChange(func, delay) end
+function NercUtilsAddon:DebounceChange(func, delay, onChange) end
 
 ---Batch the execution of a list of functions with a delay between each execution
 ---@param funcList fun()[]

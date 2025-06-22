@@ -922,7 +922,7 @@ end
 -- -------------------------------------------------------------------------- --
 
 
-function NercUtils:DebounceChange(func, delay)
+function NercUtils:DebounceChange(func, delay, callback)
     assert(type(func) == "function", "Function not provided")
     assert(type(delay) == "number", "Delay not provided")
     ---@type FunctionContainer?
@@ -933,7 +933,10 @@ function NercUtils:DebounceChange(func, delay)
             timer:Cancel()
         end
         timer = C_Timer.NewTimer(delay, function()
-            func(unpack(args))
+            local result = { func(unpack(args)) }
+            if callback and result then
+                callback(unpack(result))
+            end
         end)
     end
 end
